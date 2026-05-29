@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCMARKET — Tienda Premium de Minecraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root {
+    --void: #060608;
+    --deep: #0d0b14;
+    --surface: #13101e;
+    --card: #1a1628;
+    --card2: #1f1a30;
+    --purple-deep: #2d1b69;
+    --purple: #7c3aed;
+    --purple-bright: #9f67ff;
+    --purple-glow: #b48bff;
+    --silver: #c8cdd8;
+    --silver-bright: #e8ecf4;
+    --silver-dim: #8892a4;
+    --gold: #c9a227;
+    --gold-bright: #f0c040;
+    --gold-glow: #ffd966;
+    --border: rgba(124,58,237,0.25);
+    --border-gold: rgba(201,162,39,0.3);
+    --text: #dde2ee;
+    --text-dim: #7a80a0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--purple-bright);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, background 0.2s;
+    box-shadow: 0 0 16px var(--purple-glow);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--purple-glow);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s, opacity 0.3s;
+    opacity: 0.6;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(var(--purple), var(--gold)); border-radius: 4px; }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1; opacity: 0.4;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 4rem;
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(6,6,8,0.7);
+    backdrop-filter: blur(24px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .nav-logo {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--purple-bright) 0%, var(--silver-bright) 50%, var(--gold-bright) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex; gap: 2.5rem; list-style: none;
+    align-items: center;
+  }
+  .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--silver-dim); text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 1px; background: var(--gold-bright);
+    transform: scaleX(0); transition: transform 0.3s;
+  }
+  .nav-links a:hover { color: var(--silver-bright); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-cta {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+    border: 1px solid var(--purple-bright);
+    color: var(--silver-bright) !important;
+    padding: 0.5rem 1.4rem !important;
+    border-radius: 4px !important;
+    font-weight: 600 !important;
+    transition: box-shadow 0.3s, transform 0.2s !important;
+  }
+  .nav-cta:hover {
+    box-shadow: 0 0 24px rgba(159,103,255,0.5) !important;
+    transform: translateY(-1px) !important;
+  }
+  .nav-cta::after { display: none !important; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(45,27,105,0.6) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 70%, rgba(201,162,39,0.15) 0%, transparent 60%),
+      linear-gradient(180deg, #060608 0%, #0d0b14 40%, #13101e 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 1;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+  .hero-particles {
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    border-radius: 50%;
+    animation: floatParticle linear infinite;
+  }
+  @keyframes floatParticle {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+  }
+  .hero-content {
+    position: relative; z-index: 10;
+    text-align: center; padding: 0 2rem;
+    max-width: 900px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(201,162,39,0.12);
+    border: 1px solid rgba(201,162,39,0.4);
+    border-radius: 100px;
+    padding: 0.35rem 1.2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-bottom: 2.5rem;
+  }
+  .hero-badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold-bright);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { box-shadow: 0 0 4px var(--gold-bright); }
+    50% { box-shadow: 0 0 12px var(--gold-bright), 0 0 24px rgba(201,162,39,0.5); }
+  }
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .hero-title .line1 {
+    display: block;
+    background: linear-gradient(135deg, var(--silver-bright) 0%, var(--purple-glow) 50%, var(--silver-bright) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+  }
+  .hero-title .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 50%, var(--gold) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite reverse;
+    filter: drop-shadow(0 0 30px rgba(201,162,39,0.4));
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .hero-sub {
+    font-size: 1.2rem; font-weight: 300; letter-spacing: 1px;
+    color: var(--silver-dim); margin-bottom: 3rem;
+    line-height: 1.7;
+  }
+  .hero-sub em { color: var(--purple-glow); font-style: normal; font-weight: 600; }
+  .hero-btns { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: linear-gradient(135deg, var(--purple) 0%, #5b21b6 100%);
+    border: 1px solid var(--purple-bright);
+    color: #fff; padding: 0.9rem 2.4rem;
+    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 4px; text-decoration: none;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .btn-primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .btn-primary:hover { box-shadow: 0 0 32px rgba(124,58,237,0.6), 0 8px 24px rgba(0,0,0,0.4); transform: translateY(-2px); }
+  .btn-primary:hover::before { opacity: 1; }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: transparent;
+    border: 1px solid var(--border-gold);
+    color: var(--gold-bright); padding: 0.9rem 2.4rem;
+    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 4px; text-decoration: none;
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover { background: rgba(201,162,39,0.1); box-shadow: 0 0 24px rgba(201,162,39,0.3); transform: translateY(-2px); }
+  .hero-stats {
+    position: relative; z-index: 10;
+    display: flex; justify-content: center; gap: 4rem;
+    margin-top: 5rem; padding: 2rem;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; display: block;
+  }
+  .stat-label {
+    font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--silver-dim); display: block; margin-top: 0.3rem;
+  }
+  .hero-scroll {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 3px;
+    color: var(--text-dim); text-transform: uppercase;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-6px); }
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(transparent, var(--purple-bright));
+  }
+
+  /* ─── SECTION WRAPPER ─── */
+  section { position: relative; z-index: 2; }
+  .section-inner { max-width: 1300px; margin: 0 auto; padding: 0 3rem; }
+  .section-header { text-align: center; margin-bottom: 4rem; }
+  .section-tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border-gold);
+    padding: 0.3rem 1.2rem; border-radius: 100px; margin-bottom: 1.2rem;
+  }
+  .section-title {
+    font-family: 'Cinzel Decorative', serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900;
+    background: linear-gradient(135deg, var(--silver-bright) 0%, var(--purple-glow) 60%, var(--silver-bright) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 1rem;
+  }
+  .section-desc { color: var(--text-dim); font-size: 1.1rem; font-weight: 300; max-width: 550px; margin: 0 auto; line-height: 1.8; }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--purple) 30%, var(--gold) 50%, var(--purple) 70%, transparent 100%);
+    margin: 5rem 3rem;
+    opacity: 0.4;
+  }
+
+  /* ─── ROLES / VIP BANNER ─── */
+  #roles { padding: 6rem 0; }
+  .roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .role-card {
+    position: relative; border-radius: 12px; padding: 3rem;
+    overflow: hidden; transition: transform 0.4s;
+  }
+  .role-card:hover { transform: translateY(-6px); }
+  .role-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: 12px;
+    padding: 1px;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .role-free {
+    background: linear-gradient(135deg, rgba(19,16,30,0.9) 0%, rgba(26,22,40,0.9) 100%);
+    border: 1px solid var(--border);
+  }
+  .role-free::before { background: linear-gradient(135deg, var(--purple), transparent); }
+  .role-vip {
+    background: linear-gradient(135deg, rgba(20,13,40,0.95) 0%, rgba(35,22,60,0.95) 100%);
+    border: 1px solid rgba(201,162,39,0.4);
+  }
+  .role-vip::after {
+    content: ''; position: absolute; top: -50%; right: -20%;
+    width: 300px; height: 300px;
+    background: radial-gradient(ellipse, rgba(201,162,39,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .role-icon {
+    width: 56px; height: 56px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; margin-bottom: 1.5rem;
+  }
+  .role-free .role-icon { background: rgba(124,58,237,0.2); border: 1px solid var(--border); }
+  .role-vip .role-icon { background: rgba(201,162,39,0.15); border: 1px solid var(--border-gold); }
+  .role-badge {
+    display: inline-block;
+    font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 3px;
+    text-transform: uppercase; padding: 0.25rem 1rem; border-radius: 100px;
+    margin-bottom: 1rem;
+  }
+  .role-free .role-badge { background: rgba(124,58,237,0.2); color: var(--purple-glow); border: 1px solid var(--border); }
+  .role-vip .role-badge { background: rgba(201,162,39,0.15); color: var(--gold-bright); border: 1px solid var(--border-gold); }
+  .role-name {
+    font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; font-weight: 700;
+    margin-bottom: 0.8rem;
+  }
+  .role-free .role-name { color: var(--silver-bright); }
+  .role-vip .role-name {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .role-desc { color: var(--text-dim); font-size: 1rem; font-weight: 300; line-height: 1.8; margin-bottom: 1.5rem; }
+  .role-perks { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem; }
+  .role-perks li {
+    display: flex; align-items: center; gap: 0.8rem;
+    font-size: 0.95rem; color: var(--silver);
+  }
+  .role-perks li::before {
+    content: '▸'; font-size: 0.7rem; flex-shrink: 0;
+  }
+  .role-free .role-perks li::before { color: var(--purple-bright); }
+  .role-vip .role-perks li::before { color: var(--gold-bright); }
+  .role-price {
+    font-family: 'Cinzel Decorative', serif; font-size: 2rem; font-weight: 900;
+    margin-bottom: 1.5rem;
+  }
+  .role-free .role-price { color: var(--silver-dim); }
+  .role-vip .role-price {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .role-price span { font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; color: var(--text-dim); font-weight: 300; }
+  .btn-vip {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: linear-gradient(135deg, var(--gold) 0%, #b8891a 100%);
+    border: 1px solid var(--gold-glow);
+    color: #0d0b14; padding: 0.85rem 2rem;
+    font-family: 'Cinzel', serif; font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 4px; text-decoration: none;
+    transition: all 0.3s;
+  }
+  .btn-vip:hover { box-shadow: 0 0 32px rgba(201,162,39,0.6); transform: translateY(-2px); }
+
+  /* ─── SHOP / PLUGINS ─── */
+  #shop { padding: 6rem 0; }
+  .shop-filters {
+    display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;
+  }
+  .filter-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--silver-dim);
+    padding: 0.45rem 1.3rem; border-radius: 100px;
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: rgba(124,58,237,0.2); border-color: var(--purple-bright);
+    color: var(--purple-glow); cursor: none;
+  }
+  .plugins-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;
+  }
+  .plugin-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+    transition: all 0.4s; cursor: none;
+    position: relative;
+  }
+  .plugin-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(124,58,237,0.5);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .plugin-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(124,58,237,0.12) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .plugin-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    background: rgba(124,58,237,0.15); border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .plugin-meta { flex: 1; }
+  .plugin-name {
+    font-family: 'Cinzel', serif; font-weight: 600; font-size: 0.95rem;
+    color: var(--silver-bright); margin-bottom: 0.2rem;
+  }
+  .plugin-cat {
+    font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .plugin-tag {
+    font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 2px;
+    text-transform: uppercase; padding: 0.2rem 0.7rem; border-radius: 100px;
+    flex-shrink: 0;
+  }
+  .tag-vip { background: rgba(201,162,39,0.15); color: var(--gold-bright); border: 1px solid var(--border-gold); }
+  .tag-free { background: rgba(124,58,237,0.15); color: var(--purple-glow); border: 1px solid var(--border); }
+  .tag-hot { background: rgba(220,38,38,0.2); color: #f87171; border: 1px solid rgba(220,38,38,0.3); }
+  .plugin-body { padding: 1.5rem; }
+  .plugin-desc { color: var(--text-dim); font-size: 0.95rem; font-weight: 300; line-height: 1.7; margin-bottom: 1.2rem; }
+  .plugin-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .plugin-price {
+    font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; font-weight: 900;
+  }
+  .price-free { color: var(--purple-glow); }
+  .price-paid {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .btn-download {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 1.2rem; border-radius: 4px;
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase;
+    text-decoration: none; transition: all 0.2s; cursor: none;
+  }
+  .btn-dl-free { background: rgba(124,58,237,0.2); border: 1px solid var(--border); color: var(--purple-glow); }
+  .btn-dl-free:hover { background: rgba(124,58,237,0.35); box-shadow: 0 0 16px rgba(124,58,237,0.3); }
+  .btn-dl-vip { background: rgba(201,162,39,0.15); border: 1px solid var(--border-gold); color: var(--gold-bright); }
+  .btn-dl-vip:hover { background: rgba(201,162,39,0.25); box-shadow: 0 0 16px rgba(201,162,39,0.3); }
+  .btn-dl-locked { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim); }
+
+  /* ─── SERVICIOS ─── */
+  #servicios { padding: 6rem 0; }
+  .servicios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .servicio-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 2.5rem;
+    position: relative; overflow: hidden;
+    transition: all 0.4s;
+  }
+  .servicio-card:hover { transform: translateY(-8px); border-color: rgba(201,162,39,0.4); }
+  .servicio-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--gold-bright));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .servicio-card:hover::before { opacity: 1; }
+  .servicio-num {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5rem; font-weight: 900;
+    color: rgba(124,58,237,0.15); position: absolute; top: 1rem; right: 1.5rem;
+    line-height: 1;
+  }
+  .servicio-icon {
+    width: 64px; height: 64px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, rgba(45,27,105,0.5), rgba(124,58,237,0.2));
+    border: 1px solid var(--border);
+  }
+  .servicio-name {
+    font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 900;
+    color: var(--silver-bright); margin-bottom: 0.8rem; letter-spacing: 1px;
+  }
+  .servicio-desc { color: var(--text-dim); font-size: 0.95rem; font-weight: 300; line-height: 1.8; margin-bottom: 1.8rem; }
+  .servicio-features { list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .servicio-features li {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-size: 0.9rem; color: var(--silver);
+  }
+  .servicio-features li::before { content: '✦'; font-size: 0.5rem; color: var(--gold); flex-shrink: 0; }
+  .servicio-price-area { margin-bottom: 1.5rem; }
+  .servicio-desde { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.3rem; }
+  .servicio-price {
+    font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .servicio-price span { font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; color: var(--text-dim); font-weight: 300; }
+  .btn-contratar {
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%;
+    background: linear-gradient(135deg, var(--purple-deep) 0%, rgba(124,58,237,0.4) 100%);
+    border: 1px solid var(--purple-bright);
+    color: var(--silver-bright); padding: 0.85rem 1rem;
+    font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 6px; text-decoration: none;
+    transition: all 0.3s; cursor: none;
+  }
+  .btn-contratar:hover { box-shadow: 0 0 28px rgba(124,58,237,0.5); background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%); }
+
+  /* ─── SOCIAL / DISCORD ─── */
+  #comunidad { padding: 6rem 0; }
+  .discord-banner {
+    background: linear-gradient(135deg, rgba(88,101,242,0.2) 0%, rgba(45,27,105,0.4) 50%, rgba(88,101,242,0.1) 100%);
+    border: 1px solid rgba(88,101,242,0.4);
+    border-radius: 16px; padding: 4rem;
+    text-align: center; margin-bottom: 3rem; position: relative; overflow: hidden;
+  }
+  .discord-banner::before {
+    content: ''; position: absolute; top: -40%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(ellipse, rgba(88,101,242,0.15) 0%, transparent 70%);
+  }
+  .discord-logo {
+    font-size: 4rem; margin-bottom: 1rem; display: block;
+  }
+  .discord-title {
+    font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; font-weight: 900;
+    color: #7289da; margin-bottom: 0.8rem;
+  }
+  .discord-desc { color: var(--text-dim); font-size: 1rem; font-weight: 300; margin-bottom: 2rem; }
+  .btn-discord {
+    display: inline-flex; align-items: center; gap: 0.8rem;
+    background: #5865f2; border: 1px solid rgba(88,101,242,0.8);
+    color: #fff; padding: 0.9rem 2.4rem;
+    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 6px; text-decoration: none;
+    transition: all 0.3s;
+  }
+  .btn-discord:hover { background: #4752c4; box-shadow: 0 0 28px rgba(88,101,242,0.5); transform: translateY(-2px); }
+  .socials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+  .social-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.8rem;
+    display: flex; align-items: center; gap: 1.2rem;
+    text-decoration: none; transition: all 0.3s;
+  }
+  .social-card:hover { transform: translateY(-4px); }
+  .social-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .social-name {
+    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 1px; margin-bottom: 0.2rem;
+  }
+  .social-handle { font-size: 0.85rem; color: var(--text-dim); font-weight: 300; }
+  .social-instagram:hover { border-color: rgba(225,48,108,0.5); background: rgba(225,48,108,0.05); }
+  .social-instagram .social-name { color: #f77737; }
+  .social-tiktok:hover { border-color: rgba(105,201,208,0.5); background: rgba(105,201,208,0.05); }
+  .social-tiktok .social-name { color: #69c9d0; }
+  .social-youtube:hover { border-color: rgba(255,0,0,0.4); background: rgba(255,0,0,0.05); }
+  .social-youtube .social-name { color: #ff0000; }
+  .social-twitter:hover { border-color: rgba(29,161,242,0.4); background: rgba(29,161,242,0.05); }
+  .social-twitter .social-name { color: #1da1f2; }
+
+  /* ─── CONTACTO ─── */
+  #contacto { padding: 6rem 0; }
+  .contacto-inner {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 4rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+  }
+  .contacto-info-title {
+    font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; font-weight: 900;
+    color: var(--silver-bright); margin-bottom: 1rem;
+  }
+  .contacto-info-desc { color: var(--text-dim); font-size: 1rem; font-weight: 300; line-height: 1.8; margin-bottom: 2rem; }
+  .contact-methods { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-method {
+    display: flex; align-items: center; gap: 1rem;
+    background: rgba(124,58,237,0.08); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1rem 1.2rem;
+  }
+  .cm-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .cm-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.15rem; }
+  .cm-value { font-size: 0.9rem; color: var(--silver); font-weight: 500; }
+  .contacto-form { display: flex; flex-direction: column; gap: 1.2rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .form-label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .form-input, .form-textarea {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.85rem 1rem;
+    color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 400;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    resize: none;
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--purple-bright);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+  }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-dim); }
+  .btn-enviar {
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+    border: 1px solid var(--purple-bright);
+    color: #fff; padding: 1rem;
+    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 6px; cursor: none; transition: all 0.3s; margin-top: 0.5rem;
+  }
+  .btn-enviar:hover { box-shadow: 0 0 28px rgba(124,58,237,0.5); transform: translateY(-2px); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem;
+    background: rgba(6,6,8,0.9);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+    gap: 2rem;
+  }
+  .footer-logo {
+    font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--purple-bright) 0%, var(--silver-bright) 50%, var(--gold-bright) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .footer-copy { color: var(--text-dim); font-size: 0.85rem; font-weight: 300; }
+  .footer-links { display: flex; gap: 2rem; }
+  .footer-links a {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-dim); text-decoration: none; transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--purple-glow); }
+
+  /* ─── GLOW LINE ─── */
+  .glow-line {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    width: 1px; background: linear-gradient(transparent, var(--purple-bright), transparent);
+    opacity: 0.3; pointer-events: none;
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1rem 1.5rem;
+    font-family: 'Cinzel', sans-serif; font-size: 0.85rem; color: var(--silver-bright);
+    display: flex; align-items: center; gap: 0.8rem;
+    transform: translateX(200%); opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.2);
+    max-width: 350px;
+  }
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast-icon { font-size: 1.2rem; }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(30px); }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    .section-inner { padding: 0 1.5rem; }
+    .roles-grid, .servicios-grid { grid-template-columns: 1fr; }
+    .contacto-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-stats { gap: 2rem; }
+    footer { flex-direction: column; text-align: center; }
+    .footer-links { justify-content: center; }
+    .divider { margin: 3rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">MCMARKET</a>
+  <ul class="nav-links">
+    <li><a href="#shop">Tienda</a></li>
+    <li><a href="#roles">Rangos</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#comunidad">Comunidad</a></li>
+    <li><a href="#contacto" class="nav-cta">Contactar</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-particles" id="particles"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      Tienda Premium de Minecraft
+    </div>
+    <h1 class="hero-title">
+      <span class="line1">MCMARKET</span>
+      <span class="line2">PREMIUM</span>
+    </h1>
+    <p class="hero-sub">
+      La plataforma definitiva para <em>plugins</em>, <em>configuraciones</em> y <em>servicios profesionales</em><br>
+      para servidores de Minecraft de alto rendimiento.
+    </p>
+    <div class="hero-btns">
+      <a href="#shop" class="btn-primary">⚡ Explorar Tienda</a>
+      <a href="#servicios" class="btn-secondary">🛠 Contratar Servicios</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">500+</span>
+      <span class="stat-label">Plugins</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">2.4K</span>
+      <span class="stat-label">Usuarios</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">99%</span>
+      <span class="stat-label">Satisfacción</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">24/7</span>
+      <span class="stat-label">Soporte</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- RANGOS VIP -->
+<section id="roles">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag">Sistema de Rangos</div>
+      <h2 class="section-title">Elige Tu Acceso</h2>
+      <p class="section-desc">Desbloquea contenido exclusivo y accede a plugins premium con el rango VIP.</p>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card role-free reveal">
+        <div class="role-icon">👤</div>
+        <div class="role-badge">Gratuito</div>
+        <div class="role-name">Usuario</div>
+        <p class="role-desc">Acceso básico a la plataforma con descarga de plugins gratuitos y comunidad.</p>
+        <ul class="role-perks">
+          <li>Descarga de plugins FREE</li>
+          <li>Acceso al Discord oficial</li>
+          <li>Actualizaciones básicas</li>
+          <li>Soporte por tickets</li>
+        </ul>
+        <div class="role-price">$0 <span>/ para siempre</span></div>
+        <a href="#shop" class="btn-primary">Empezar Gratis</a>
+      </div>
+      <div class="role-card role-vip reveal">
+        <div class="role-icon">💎</div>
+        <div class="role-badge">Exclusivo</div>
+        <div class="role-name">VIP Premium</div>
+        <p class="role-desc">Acceso total a plugins premium, configs exclusivas y soporte prioritario.</p>
+        <ul class="role-perks">
+          <li>Todo el contenido FREE incluido</li>
+          <li>Plugins PREMIUM ilimitados</li>
+          <li>Configs exclusivas de alto nivel</li>
+          <li>Canal VIP en Discord</li>
+          <li>Soporte prioritario 24/7</li>
+          <li>Acceso anticipado a lanzamientos</li>
+          <li>Badge VIP en el servidor</li>
+        </ul>
+        <div class="role-price">$9.99 <span>/ mes</span></div>
+        <a href="#contacto" class="btn-vip">💎 Obtener VIP</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SHOP / PLUGINS -->
+<section id="shop">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag">Tienda MCMarket</div>
+      <h2 class="section-title">Plugins & Configs</h2>
+      <p class="section-desc">Catálogo curado de los mejores plugins y configuraciones para tu servidor.</p>
+    </div>
+    <div class="shop-filters">
+      <button class="filter-btn active" onclick="filterPlugins('all', this)">Todos</button>
+      <button class="filter-btn" onclick="filterPlugins('free', this)">Gratuitos</button>
+      <button class="filter-btn" onclick="filterPlugins('vip', this)">VIP Premium</button>
+      <button class="filter-btn" onclick="filterPlugins('pvp', this)">PvP</button>
+      <button class="filter-btn" onclick="filterPlugins('economia', this)">Economía</button>
+      <button class="filter-btn" onclick="filterPlugins('lobby', this)">Lobby</button>
+    </div>
+    <div class="plugins-grid" id="pluginsGrid">
+
+      <div class="plugin-card reveal" data-cat="free pvp">
+        <div class="plugin-header">
+          <div class="plugin-icon">⚔️</div>
+          <div class="plugin-meta">
+            <div class="plugin-name">KitPvP Ultimate</div>
+            <div class="plugin-cat">PvP · Kits</div>
+          </div>
+          <div class="plugin-tag tag-free">FREE</div>
+        </div>
+        <div class="plugin-body">
+          <p class="plugin-desc">Sistema completo de KitPvP con kits personalizables, arenas y estadísticas.</p>
+        </div>
+        <div class="plugin-footer">
+          <div class="plugin-price price-free">GRATIS</div>
+          <a href="#" class="btn-download btn-dl-free" onclick="showToast('⬇️ Descargando KitPvP Ultimate...', 'success'); return false;">⬇ Descargar</a>
+        </div>
+      </div>
+
+      <div class="plugin-card reveal" data-cat="vip economia">
+        <div class="plugin-header">
+          <div class="plugin-icon">💰</div>
+          <div class="plugin-meta">
+            <div class="plugin-name">EconomyPro X</div>
+            <div class="plugin-cat">Economía · Tienda</div>
+          </div>
+          <div class="plugin-tag tag-vip">VIP</div>
+        </div>
+        <div class="plugin-body">
+          <p class="plugin-desc">Sistema económico premium con banco, impuestos, inflación y GUI personalizada.</p>
+        </div>
+        <div class="plugin-footer">
+          <div class="plugin-price price-paid">$4.99</div>
+          <a href="#" class="btn-download btn-dl-vip" onclick="showToast('💎 Requiere rango VIP para descargar.', 'vip'); return false;">💎 VIP</a>
+        </div>
+      </div>
+
+      <div class="plugin-card reveal" data-cat="vip lobby">
+        <div class="plugin-header">
+          <div class="plugin-icon">🏟️</div>
+          <div class="plugin-meta">
+            <div class="plugin-name">LobbyMaster Elite</div>
+            <div class="plugin-cat">Lobby · Spawn</div>
+          </div>
+          <div class="plugin-tag tag-hot">🔥 HOT</div>
+        </div>
+        <div class="plugin-body">
+          <p class="plugin-desc">Lobby interactivo con NPCs animados, efectos de partículas y menú GUI épico.</p>
+        </div>
+        <div class="plugin-footer">
+          <div class="plugin-price price-paid">$7.99</div>
+          <a href="#" class="btn-download btn-dl-vip" onclick="showToast('💎 Requiere rango VIP para descargar.', 'vip'); return false;">💎 VIP</a>
+        </div>
+      </div>
+
+      <div class="plugin-card reveal" data-cat="free lobby">
+        <div class="plugin-header">
+          <div class="plugin-icon">🌟</div>
+          <div class="plugin-meta">
+            <div class="plugin-name">StarterNPC</div>
+            <div class="plugin-cat">NPCs · Básico</div>
+          </div>
+          <div class="plugin-tag tag-free">FREE</div>
+        </div>
+        <div class="plugin-body">
+          <p class="plugin-desc">Crea NPCs de bienvenida con diálogos y comandos básicos para tu spawn.</p>
+        </div>
+        <div class="plugin-footer">
+          <div class="plugin-price price-free">GRATIS</div>
+          <a href="#" class="btn-download btn-dl-free" onclick="showToast('⬇️ Descargando StarterNPC...', 'success'); return false;">⬇ Descargar</a>
+        </div>
+      </div>
+
+      <div class="plugin-card reveal" data-cat="vip pvp">
+        <div class="plugin-header">
+          <div class="plugin-icon">🛡️</div>
+          <div class="plugin-meta">
+            <div class="plugin-name">AntiCheat Shield</div>
+            <div class="plugin-cat">Seguridad · PvP</div>
+          </div>
+          <div class="plugin-tag tag-vip">VIP</div>
+        </div>
+        <div class="plugin-body">
+          <p class="plugin-desc">Sistema anti-hacks avanzado con detección de killaura, fly, speed y más.</p>
+        </div>
+        <div class="plugin-footer">
+          <div class="plugin-price price-paid">$12.99</div>
+          <a href="#" class="btn-download btn-dl-vip" onclick="showToast('💎 Requiere rango VIP para descargar.', 'vip'); return false;">💎 VIP</a>
+        </div>
+      </div>
+
+      <div class="plugin-card reveal" data-cat="vip economia">
+        <div class="plugin-header">
+          <div class="plugin-icon">🏪</div>
+          <div class="plugin-meta">
+            <div class="plugin-name">ShopGUI Ultimate</div>
+            <div class="plugin-cat">Economía · GUI</div>
+          </div>
+          <div class="plugin-tag tag-vip">VIP</div>
+        </div>
+        <div class="plugin-body">
+          <p class="plugin-desc">Tienda con GUI ultra personalizable, categorías, descuentos y compra en bulk.</p>
+        </div>
+        <div class="plugin-footer">
+          <div class="plugin-price price-paid">$8.99</div>
+          <a href="#" class="btn-download btn-dl-vip" onclick="showToast('💎 Requiere rango VIP para descargar.', 'vip'); return false;">💎 VIP</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag">Contrataciones</div>
+      <h2 class="section-title">Servicios Profesionales</h2>
+      <p class="section-desc">Soluciones a medida por expertos en Minecraft y desarrollo web.</p>
+    </div>
+    <div class="servicios-grid">
+
+      <div class="servicio-card reveal">
+        <div class="servicio-num">01</div>
+        <div class="servicio-icon">🧱</div>
+        <div class="servicio-name">Creación de Servidores</div>
+        <p class="servicio-desc">Configuramos y desplegamos tu servidor Minecraft desde cero: plugins, permisos, mundos, economía y todo lo que necesites.</p>
+        <ul class="servicio-features">
+          <li>Instalación y configuración completa</li>
+          <li>Plugins optimizados y personalizados</li>
+          <li>Sistema de rangos y permisos</li>
+          <li>Anti-lag y optimización</li>
+          <li>Mundos personalizados</li>
+        </ul>
+        <div class="servicio-price-area">
+          <div class="servicio-desde">Desde</div>
+          <div class="servicio-price">$29.99 <span>/ proyecto</span></div>
+        </div>
+        <a href="#contacto" class="btn-contratar">Contratar Ahora →</a>
+      </div>
+
+      <div class="servicio-card reveal">
+        <div class="servicio-num">02</div>
+        <div class="servicio-icon">🌐</div>
+        <div class="servicio-name">Páginas Web</div>
+        <p class="servicio-desc">Desarrollamos tu página web profesional para tu servidor: store, foro, panel de donaciones y más.</p>
+        <ul class="servicio-features">
+          <li>Diseño moderno y responsive</li>
+          <li>Tienda de rangos integrada</li>
+          <li>Panel de administración</li>
+          <li>SEO optimizado</li>
+          <li>Integración con Discord</li>
+        </ul>
+        <div class="servicio-price-area">
+          <div class="servicio-desde">Desde</div>
+          <div class="servicio-price">$49.99 <span>/ proyecto</span></div>
+        </div>
+        <a href="#contacto" class="btn-contratar">Contratar Ahora →</a>
+      </div>
+
+      <div class="servicio-card reveal">
+        <div class="servicio-num">03</div>
+        <div class="servicio-icon">⚙️</div>
+        <div class="servicio-name">Servicios Personalizados</div>
+        <p class="servicio-desc">¿Necesitas algo único? Desarrollo de plugins a medida, scripts, bots de Discord y más soluciones custom.</p>
+        <ul class="servicio-features">
+          <li>Plugins hechos a tu medida</li>
+          <li>Bots de Discord personalizados</li>
+          <li>Scripts de automatización</li>
+          <li>Integración con APIs externas</li>
+          <li>Soporte técnico dedicado</li>
+        </ul>
+        <div class="servicio-price-area">
+          <div class="servicio-desde">Precio</div>
+          <div class="servicio-price">Cotización <span>/ personalizado</span></div>
+        </div>
+        <a href="#contacto" class="btn-contratar">Solicitar Cotización →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMUNIDAD -->
+<section id="comunidad">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag">Comunidad</div>
+      <h2 class="section-title">Únete a Nosotros</h2>
+      <p class="section-desc">Conecta con miles de administradores y jugadores en nuestra comunidad.</p>
+    </div>
+
+    <div class="discord-banner reveal">
+      <span class="discord-logo">🎮</span>
+      <div class="discord-title">Discord Oficial — MCMarket</div>
+      <p class="discord-desc">+2,400 miembros. Soporte en vivo, novedades, sorteos y canal VIP exclusivo.</p>
+      <a href="https://discord.gg/mcmarket" target="_blank" class="btn-discord">
+        <svg width="18" height="14" viewBox="0 0 71 55" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M60.1 4.9C55.5 2.7 50.6 1.1 45.5 0.2c-0.7 1.2-1.4 2.8-1.9 4.1c-5.5-0.8-10.9-0.8-16.3 0C26.8 3 26 1.4 25.3 0.2C20.2 1.1 15.3 2.7 10.7 4.9C1.5 18.7-0.9 32.2 0.3 45.5c5.8 4.3 11.4 6.9 16.9 8.6c1.4-1.9 2.6-3.9 3.6-6c-1.9-0.7-3.8-1.6-5.5-2.7c0.5-0.3 0.9-0.7 1.4-1c10.6 4.9 22.1 4.9 32.5 0c0.5 0.3 0.9 0.7 1.4 1c-1.8 1.1-3.7 2-5.5 2.7c1 2.1 2.2 4.1 3.6 6c5.5-1.7 11.2-4.3 16.9-8.6C72.7 29.9 68.6 16.3 60.1 4.9zM23.7 37.3c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2s6.4 3.2 6.4 7.2S27.3 37.3 23.7 37.3zM47.3 37.3c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2s6.4 3.2 6.4 7.2S50.8 37.3 47.3 37.3z"/></svg>
+        Unirse al Discord
+      </a>
+    </div>
+
+    <div class="socials-grid">
+      <a href="https://instagram.com/mcmarket" target="_blank" class="social-card social-instagram reveal">
+        <span class="social-icon">📸</span>
+        <div>
+          <div class="social-name">Instagram</div>
+          <div class="social-handle">@mcmarket.oficial</div>
+        </div>
+      </a>
+      <a href="https://tiktok.com/@mcmarket" target="_blank" class="social-card social-tiktok reveal">
+        <span class="social-icon">🎵</span>
+        <div>
+          <div class="social-name">TikTok</div>
+          <div class="social-handle">@mcmarket</div>
+        </div>
+      </a>
+      <a href="https://youtube.com/mcmarket" target="_blank" class="social-card social-youtube reveal">
+        <span class="social-icon">▶️</span>
+        <div>
+          <div class="social-name">YouTube</div>
+          <div class="social-handle">MCMarket Oficial</div>
+        </div>
+      </a>
+      <a href="https://twitter.com/mcmarket" target="_blank" class="social-card social-twitter reveal">
+        <span class="social-icon">🐦</span>
+        <div>
+          <div class="social-name">Twitter / X</div>
+          <div class="social-handle">@mcmarket</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-tag">Soporte & Contacto</div>
+      <h2 class="section-title">Hablemos</h2>
+      <p class="section-desc">¿Listo para llevar tu servidor al siguiente nivel? Contáctanos.</p>
+    </div>
+    <div class="contacto-inner reveal">
+      <div>
+        <div class="contacto-info-title">¿Cómo podemos ayudarte?</div>
+        <p class="contacto-info-desc">
+          Ya sea que necesites un servidor completo, una página web profesional, o un plugin a medida,
+          nuestro equipo está listo para hacerlo realidad. Respondemos en menos de 24 horas.
+        </p>
+        <div class="contact-methods">
+          <div class="contact-method">
+            <span class="cm-icon">💬</span>
+            <div>
+              <div class="cm-label">Discord</div>
+              <div class="cm-value">discord.gg/mcmarket</div>
+            </div>
+          </div>
+          <div class="contact-method">
+            <span class="cm-icon">📧</span>
+            <div>
+              <div class="cm-label">Email</div>
+              <div class="cm-value">soporte@mcmarket.net</div>
+            </div>
+          </div>
+          <div class="contact-method">
+            <span class="cm-icon">⏱️</span>
+            <div>
+              <div class="cm-label">Tiempo de Respuesta</div>
+              <div class="cm-value">Menos de 24 horas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="contacto-form" id="contactForm">
+          <div class="form-group">
+            <label class="form-label">Tu Nombre</label>
+            <input type="text" class="form-input" placeholder="Steve Notch" id="fname">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-input" placeholder="tu@correo.com" id="femail">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Servicio de Interés</label>
+            <select class="form-input" id="fservice" style="cursor:none;">
+              <option value="">Seleccionar...</option>
+              <option>Creación de Servidor</option>
+              <option>Página Web</option>
+              <option>Plugin Personalizado</option>
+              <option>Rango VIP</option>
+              <option>Soporte Técnico</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mensaje</label>
+            <textarea class="form-textarea" rows="4" placeholder="Cuéntanos sobre tu proyecto..." id="fmessage"></textarea>
+          </div>
+          <button class="btn-enviar" onclick="submitForm()">✉ Enviar Mensaje</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">MCMARKET</div>
+  <div class="footer-copy">© 2025 MCMarket. Todos los derechos reservados.</div>
+  <div class="footer-links">
+    <a href="#">Términos</a>
+    <a href="#">Privacidad</a>
+    <a href="#">Reembolsos</a>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✅</span>
+  <span id="toastMsg">Mensaje</span>
+</div>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+function animRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); }
+animRing();
+document.querySelectorAll('a, button, .plugin-card, .servicio-card, .role-card, .social-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2.5)'; ring.style.width = '60px'; ring.style.height = '60px'; ring.style.opacity = '0.3'; });
+  el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '0.6'; });
+});
+
+// PARTICLES
+const pContainer = document.getElementById('particles');
+const colors = ['#9f67ff','#c9a227','#e8ecf4','#7c3aed','#f0c040'];
+for (let i = 0; i < 40; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = Math.random() * 3 + 1;
+  p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*15+8}s;animation-delay:${Math.random()*10}s;`;
+  pContainer.appendChild(p);
+}
+
+// GSAP ANIMATIONS
+gsap.from('.hero-badge', { duration: 1, opacity: 0, y: 30, ease: 'power3.out', delay: 0.3 });
+gsap.from('.hero-title .line1', { duration: 1.2, opacity: 0, y: 60, ease: 'power3.out', delay: 0.5 });
+gsap.from('.hero-title .line2', { duration: 1.2, opacity: 0, y: 60, ease: 'power3.out', delay: 0.7 });
+gsap.from('.hero-sub', { duration: 1, opacity: 0, y: 30, ease: 'power3.out', delay: 0.9 });
+gsap.from('.hero-btns', { duration: 1, opacity: 0, y: 30, ease: 'power3.out', delay: 1.1 });
+gsap.from('.stat', { duration: 0.8, opacity: 0, y: 20, stagger: 0.15, ease: 'power2.out', delay: 1.4 });
+
+// SCROLL REVEAL
+document.querySelectorAll('.reveal').forEach(el => {
+  gsap.fromTo(el, { opacity: 0, y: 40 }, {
+    opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+    scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+  });
+});
+
+// PARALLAX HERO GRID
+gsap.to('.hero-grid', {
+  yPercent: 30,
+  ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 }
+});
+gsap.to('.hero-content', {
+  yPercent: 20,
+  opacity: 0.3,
+  ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 }
+});
+
+// NAV SCROLL
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  nav.style.background = window.scrollY > 60 ? 'rgba(6,6,8,0.95)' : 'rgba(6,6,8,0.7)';
+});
+
+// PLUGIN FILTER
+function filterPlugins(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.plugin-card').forEach(card => {
+    if (cat === 'all' || card.dataset.cat?.includes(cat)) {
+      card.style.display = '';
+      gsap.fromTo(card, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' });
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// TOAST
+let toastTimeout;
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toastMsg');
+  const toastIcon = document.getElementById('toastIcon');
+  clearTimeout(toastTimeout);
+  toastMsg.textContent = msg;
+  if (type === 'vip') {
+    toast.style.borderColor = 'rgba(201,162,39,0.5)';
+    toastIcon.textContent = '💎';
+  } else {
+    toast.style.borderColor = 'rgba(124,58,237,0.5)';
+    toastIcon.textContent = '✅';
+  }
+  toast.classList.add('show');
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// FORM SUBMIT
+function submitForm() {
+  const name = document.getElementById('fname').value;
+  const email = document.getElementById('femail').value;
+  if (!name || !email) { showToast('⚠️ Por favor completa los campos requeridos.', 'vip'); return; }
+  showToast('✅ ¡Mensaje enviado! Te contactamos pronto.', 'success');
+  document.getElementById('fname').value = '';
+  document.getElementById('femail').value = '';
+  document.getElementById('fservice').value = '';
+  document.getElementById('fmessage').value = '';
+}
+
+// CARD TILT EFFECT
+document.querySelectorAll('.plugin-card, .servicio-card, .role-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = `translateY(-6px) rotateX(${-y * 5}deg) rotateY(${x * 5}deg)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+    card.style.transition = 'transform 0.5s ease';
+    setTimeout(() => card.style.transition = '', 500);
+  });
+});
+
+// COUNTER ANIMATION
+function animateCounter(el, target, suffix = '') {
+  let start = 0;
+  const duration = 2000;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(ease * target) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const nums = document.querySelectorAll('.stat-num');
+      const targets = [500, 2400, 99, 24];
+      const suffixes = ['+', '+', '%', '/7'];
+      nums.forEach((n, i) => animateCounter(n, targets[i], suffixes[i]));
+      statsObserver.disconnect();
+    }
+  });
+}, { threshold: 0.5 });
+const statsEl = document.querySelector('.hero-stats');
+if (statsEl) statsObserver.observe(statsEl);
+</script>
+</body>
+</html>
