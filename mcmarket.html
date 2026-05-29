@@ -3,1334 +3,1041 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MCMARKET — Tienda Premium de Minecraft</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<title>MCMarket — Premium Minecraft Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --void: #060608;
-    --deep: #0d0b14;
-    --surface: #13101e;
-    --card: #1a1628;
-    --card2: #1f1a30;
-    --purple-deep: #2d1b69;
-    --purple: #7c3aed;
-    --purple-bright: #9f67ff;
-    --purple-glow: #b48bff;
-    --silver: #c8cdd8;
-    --silver-bright: #e8ecf4;
-    --silver-dim: #8892a4;
-    --gold: #c9a227;
-    --gold-bright: #f0c040;
-    --gold-glow: #ffd966;
-    --border: rgba(124,58,237,0.25);
-    --border-gold: rgba(201,162,39,0.3);
-    --text: #dde2ee;
-    --text-dim: #7a80a0;
-  }
+:root {
+  --purple:      #7c3aed;
+  --purple-light:#a855f7;
+  --purple-dim:  #4c1d95;
+  --purple-glow: rgba(124,58,237,0.45);
+  --gold:        #f59e0b;
+  --gold-light:  #fcd34d;
+  --gold-dim:    #92400e;
+  --silver:      #cbd5e1;
+  --silver-dim:  #64748b;
+  --bg:          #09080f;
+  --bg2:         #0e0b18;
+  --surface:     #130f22;
+  --surface2:    #1a1430;
+  --border:      rgba(124,58,237,0.22);
+  --border-gold: rgba(245,158,11,0.28);
+  --text:        #e2d9f3;
+  --muted:       #7c6f9e;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden;cursor:none}
 
-  html { scroll-behavior: smooth; overflow-x: hidden; }
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--purple);border-radius:2px}
 
-  body {
-    background: var(--void);
-    color: var(--text);
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 400;
-    overflow-x: hidden;
-    cursor: none;
-  }
+/* CURSOR */
+.cur{position:fixed;width:12px;height:12px;background:var(--purple-light);border-radius:50%;pointer-events:none;z-index:9999;mix-blend-mode:screen;transition:transform .08s}
+.cur-ring{position:fixed;width:34px;height:34px;border:1.5px solid var(--purple-light);border-radius:50%;pointer-events:none;z-index:9998;opacity:.45;transition:all .14s ease}
 
-  /* CUSTOM CURSOR */
-  .cursor {
-    width: 12px; height: 12px;
-    background: var(--purple-bright);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s, background 0.2s;
-    box-shadow: 0 0 16px var(--purple-glow);
-  }
-  .cursor-ring {
-    width: 36px; height: 36px;
-    border: 1.5px solid var(--purple-glow);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%, -50%);
-    transition: width 0.3s, height 0.3s, opacity 0.3s;
-    opacity: 0.6;
-  }
+/* GLOBAL TEXTURE BG */
+.gtex{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 55% at 20% 20%,rgba(124,58,237,.1) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 50% at 80% 80%,rgba(245,158,11,.06) 0%,transparent 55%),
+    repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(124,58,237,.03) 60px),
+    repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(124,58,237,.03) 60px);
+}
 
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--deep); }
-  ::-webkit-scrollbar-thumb { background: linear-gradient(var(--purple), var(--gold)); border-radius: 4px; }
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 3rem;
+  background:rgba(9,8,15,.8);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  transition:background .3s}
+.logo{font-family:'Cinzel',serif;font-weight:900;font-size:1.35rem;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--purple-light));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:.08em}
+.logo span{color:var(--silver)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:.85rem;font-weight:500;color:var(--muted);text-decoration:none;
+  letter-spacing:.06em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--purple-light)}
+.nav-actions{display:flex;align-items:center;gap:.8rem}
+.nav-btn{font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;padding:.55rem 1.2rem;
+  border-radius:4px;text-decoration:none;cursor:none;transition:all .2s;border:none}
+.nav-btn-ghost{background:transparent;color:var(--silver);border:1px solid var(--border)}
+.nav-btn-ghost:hover{border-color:var(--purple-light);color:var(--purple-light)}
+.nav-btn-vip{background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:#1a0a00;font-weight:700}
+.nav-btn-vip:hover{box-shadow:0 0 18px rgba(245,158,11,.4)}
 
-  /* NOISE OVERLAY */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 1; opacity: 0.4;
-  }
+/* ── HERO ── */
+#hero{height:100vh;min-height:720px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.22}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,8,15,.25) 0%,rgba(9,8,15,.5) 60%,var(--bg) 100%)}
+.hero-content{position:relative;z-index:2}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:400;
+  color:var(--gold);letter-spacing:.3em;text-transform:uppercase;
+  border:1px solid var(--border-gold);padding:.35rem 1.1rem;border-radius:2px;
+  background:rgba(245,158,11,.06);display:inline-block;margin-bottom:2rem}
+.hero-title{font-family:'Cinzel',serif;font-weight:900;
+  font-size:clamp(3.5rem,9vw,8rem);line-height:.92;
+  background:linear-gradient(135deg,#fff 0%,var(--silver) 30%,var(--purple-light) 60%,var(--gold-light) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:.5rem;letter-spacing:.04em}
+.hero-sub{font-family:'Cinzel',serif;font-size:clamp(.9rem,2vw,1.2rem);
+  color:var(--gold);letter-spacing:.4em;text-transform:uppercase;
+  margin-bottom:1.8rem;font-weight:400}
+.hero-desc{font-size:1.1rem;color:var(--muted);max-width:500px;margin:0 auto 2.8rem;line-height:1.65}
+.hero-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn{font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;padding:.9rem 2.2rem;
+  border-radius:3px;text-decoration:none;display:inline-flex;align-items:center;gap:.6rem;cursor:none;transition:all .25s}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light));color:#0a0500;border:none}
+.btn-gold:hover{box-shadow:0 0 28px rgba(245,158,11,.55);transform:translateY(-2px)}
+.btn-purple{background:transparent;color:var(--purple-light);border:1.5px solid var(--border)}
+.btn-purple:hover{border-color:var(--purple-light);background:rgba(124,58,237,.12);box-shadow:0 0 20px var(--purple-glow)}
 
-  /* ─── NAV ─── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 0 4rem;
-    height: 72px;
-    display: flex; align-items: center; justify-content: space-between;
-    background: rgba(6,6,8,0.7);
-    backdrop-filter: blur(24px) saturate(180%);
-    border-bottom: 1px solid var(--border);
-    transition: background 0.3s;
-  }
-  .nav-logo {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 1.5rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--purple-bright) 0%, var(--silver-bright) 50%, var(--gold-bright) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 2px;
-    text-decoration: none;
-  }
-  .nav-links {
-    display: flex; gap: 2.5rem; list-style: none;
-    align-items: center;
-  }
-  .nav-links a {
-    font-family: 'Cinzel', serif;
-    font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--silver-dim); text-decoration: none;
-    transition: color 0.2s;
-    position: relative;
-  }
-  .nav-links a::after {
-    content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
-    height: 1px; background: var(--gold-bright);
-    transform: scaleX(0); transition: transform 0.3s;
-  }
-  .nav-links a:hover { color: var(--silver-bright); }
-  .nav-links a:hover::after { transform: scaleX(1); }
-  .nav-cta {
-    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
-    border: 1px solid var(--purple-bright);
-    color: var(--silver-bright) !important;
-    padding: 0.5rem 1.4rem !important;
-    border-radius: 4px !important;
-    font-weight: 600 !important;
-    transition: box-shadow 0.3s, transform 0.2s !important;
-  }
-  .nav-cta:hover {
-    box-shadow: 0 0 24px rgba(159,103,255,0.5) !important;
-    transform: translateY(-1px) !important;
-  }
-  .nav-cta::after { display: none !important; }
+/* badge VIP */
+.vip-badge{display:inline-flex;align-items:center;gap:.5rem;
+  border:1px solid var(--border-gold);border-radius:20px;
+  padding:.3rem 1rem .3rem .5rem;margin-top:2rem;
+  background:rgba(245,158,11,.07);font-size:.8rem;color:var(--gold)}
+.vip-badge-icon{width:22px;height:22px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem}
 
-  /* ─── HERO ─── */
-  #hero {
-    min-height: 100vh;
-    position: relative; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .hero-bg {
-    position: absolute; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(45,27,105,0.6) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 80% 70%, rgba(201,162,39,0.15) 0%, transparent 60%),
-      linear-gradient(180deg, #060608 0%, #0d0b14 40%, #13101e 100%);
-  }
-  .hero-grid {
-    position: absolute; inset: 0; z-index: 1;
-    background-image:
-      linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-  }
-  .hero-particles {
-    position: absolute; inset: 0; z-index: 2; pointer-events: none;
-    overflow: hidden;
-  }
-  .particle {
-    position: absolute;
-    width: 2px; height: 2px;
-    border-radius: 50%;
-    animation: floatParticle linear infinite;
-  }
-  @keyframes floatParticle {
-    0% { transform: translateY(100vh) scale(0); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
-  }
-  .hero-content {
-    position: relative; z-index: 10;
-    text-align: center; padding: 0 2rem;
-    max-width: 900px;
-  }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    background: rgba(201,162,39,0.12);
-    border: 1px solid rgba(201,162,39,0.4);
-    border-radius: 100px;
-    padding: 0.35rem 1.2rem;
-    font-family: 'Cinzel', serif;
-    font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
-    color: var(--gold-bright);
-    margin-bottom: 2.5rem;
-  }
-  .hero-badge-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--gold-bright);
-    animation: pulseDot 2s ease-in-out infinite;
-  }
-  @keyframes pulseDot {
-    0%, 100% { box-shadow: 0 0 4px var(--gold-bright); }
-    50% { box-shadow: 0 0 12px var(--gold-bright), 0 0 24px rgba(201,162,39,0.5); }
-  }
-  .hero-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(3rem, 8vw, 7rem);
-    font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: -2px;
-    margin-bottom: 1.5rem;
-    position: relative;
-  }
-  .hero-title .line1 {
-    display: block;
-    background: linear-gradient(135deg, var(--silver-bright) 0%, var(--purple-glow) 50%, var(--silver-bright) 100%);
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 4s linear infinite;
-  }
-  .hero-title .line2 {
-    display: block;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 50%, var(--gold) 100%);
-    background-size: 200% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 4s linear infinite reverse;
-    filter: drop-shadow(0 0 30px rgba(201,162,39,0.4));
-  }
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-  .hero-sub {
-    font-size: 1.2rem; font-weight: 300; letter-spacing: 1px;
-    color: var(--silver-dim); margin-bottom: 3rem;
-    line-height: 1.7;
-  }
-  .hero-sub em { color: var(--purple-glow); font-style: normal; font-weight: 600; }
-  .hero-btns { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; }
-  .btn-primary {
-    display: inline-flex; align-items: center; gap: 0.6rem;
-    background: linear-gradient(135deg, var(--purple) 0%, #5b21b6 100%);
-    border: 1px solid var(--purple-bright);
-    color: #fff; padding: 0.9rem 2.4rem;
-    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase;
-    border-radius: 4px; text-decoration: none;
-    transition: all 0.3s; position: relative; overflow: hidden;
-  }
-  .btn-primary::before {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .btn-primary:hover { box-shadow: 0 0 32px rgba(124,58,237,0.6), 0 8px 24px rgba(0,0,0,0.4); transform: translateY(-2px); }
-  .btn-primary:hover::before { opacity: 1; }
-  .btn-secondary {
-    display: inline-flex; align-items: center; gap: 0.6rem;
-    background: transparent;
-    border: 1px solid var(--border-gold);
-    color: var(--gold-bright); padding: 0.9rem 2.4rem;
-    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase;
-    border-radius: 4px; text-decoration: none;
-    transition: all 0.3s;
-  }
-  .btn-secondary:hover { background: rgba(201,162,39,0.1); box-shadow: 0 0 24px rgba(201,162,39,0.3); transform: translateY(-2px); }
-  .hero-stats {
-    position: relative; z-index: 10;
-    display: flex; justify-content: center; gap: 4rem;
-    margin-top: 5rem; padding: 2rem;
-  }
-  .stat { text-align: center; }
-  .stat-num {
-    font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; display: block;
-  }
-  .stat-label {
-    font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 3px;
-    text-transform: uppercase; color: var(--silver-dim); display: block; margin-top: 0.3rem;
-  }
-  .hero-scroll {
-    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-    z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-    font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 3px;
-    color: var(--text-dim); text-transform: uppercase;
-    animation: bounce 2s ease-in-out infinite;
-  }
-  @keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-6px); }
-  }
-  .scroll-line {
-    width: 1px; height: 40px;
-    background: linear-gradient(transparent, var(--purple-bright));
-  }
+/* scroll arrow */
+.scroll-arr{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.2em}
+.arrow-line{width:1px;height:42px;background:linear-gradient(180deg,var(--purple-light),transparent);animation:ap 2s ease-in-out infinite}
+@keyframes ap{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.3;transform:scaleY(.5)}}
 
-  /* ─── SECTION WRAPPER ─── */
-  section { position: relative; z-index: 2; }
-  .section-inner { max-width: 1300px; margin: 0 auto; padding: 0 3rem; }
-  .section-header { text-align: center; margin-bottom: 4rem; }
-  .section-tag {
-    display: inline-block;
-    font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid var(--border-gold);
-    padding: 0.3rem 1.2rem; border-radius: 100px; margin-bottom: 1.2rem;
-  }
-  .section-title {
-    font-family: 'Cinzel Decorative', serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900;
-    background: linear-gradient(135deg, var(--silver-bright) 0%, var(--purple-glow) 60%, var(--silver-bright) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; margin-bottom: 1rem;
-  }
-  .section-desc { color: var(--text-dim); font-size: 1.1rem; font-weight: 300; max-width: 550px; margin: 0 auto; line-height: 1.8; }
+/* floating orbs */
+.orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px)}
+.orb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 70%);top:-100px;left:-150px}
+.orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(245,158,11,.1),transparent 70%);top:20%;right:-100px}
+.orb-3{width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.12),transparent 70%);bottom:5%;left:30%}
 
-  /* ─── DIVIDER ─── */
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, var(--purple) 30%, var(--gold) 50%, var(--purple) 70%, transparent 100%);
-    margin: 5rem 3rem;
-    opacity: 0.4;
-  }
+/* ── SECTION BASE ── */
+section{position:relative;z-index:1}
+.wrap{max-width:1200px;margin:0 auto;padding:6rem 2rem}
+.s-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:400;
+  color:var(--gold);letter-spacing:.3em;text-transform:uppercase;
+  display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+.s-label::before{content:'';width:24px;height:1px;background:var(--gold)}
+.s-title{font-family:'Cinzel',serif;font-weight:700;
+  font-size:clamp(1.8rem,4vw,3rem);color:#fff;line-height:1.1;margin-bottom:1rem}
+.s-title .hl{background:linear-gradient(90deg,var(--purple-light),var(--gold-light));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
-  /* ─── ROLES / VIP BANNER ─── */
-  #roles { padding: 6rem 0; }
-  .roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-  .role-card {
-    position: relative; border-radius: 12px; padding: 3rem;
-    overflow: hidden; transition: transform 0.4s;
-  }
-  .role-card:hover { transform: translateY(-6px); }
-  .role-card::before {
-    content: ''; position: absolute; inset: 0; border-radius: 12px;
-    padding: 1px;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    pointer-events: none;
-  }
-  .role-free {
-    background: linear-gradient(135deg, rgba(19,16,30,0.9) 0%, rgba(26,22,40,0.9) 100%);
-    border: 1px solid var(--border);
-  }
-  .role-free::before { background: linear-gradient(135deg, var(--purple), transparent); }
-  .role-vip {
-    background: linear-gradient(135deg, rgba(20,13,40,0.95) 0%, rgba(35,22,60,0.95) 100%);
-    border: 1px solid rgba(201,162,39,0.4);
-  }
-  .role-vip::after {
-    content: ''; position: absolute; top: -50%; right: -20%;
-    width: 300px; height: 300px;
-    background: radial-gradient(ellipse, rgba(201,162,39,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .role-icon {
-    width: 56px; height: 56px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem; margin-bottom: 1.5rem;
-  }
-  .role-free .role-icon { background: rgba(124,58,237,0.2); border: 1px solid var(--border); }
-  .role-vip .role-icon { background: rgba(201,162,39,0.15); border: 1px solid var(--border-gold); }
-  .role-badge {
-    display: inline-block;
-    font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 3px;
-    text-transform: uppercase; padding: 0.25rem 1rem; border-radius: 100px;
-    margin-bottom: 1rem;
-  }
-  .role-free .role-badge { background: rgba(124,58,237,0.2); color: var(--purple-glow); border: 1px solid var(--border); }
-  .role-vip .role-badge { background: rgba(201,162,39,0.15); color: var(--gold-bright); border: 1px solid var(--border-gold); }
-  .role-name {
-    font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; font-weight: 700;
-    margin-bottom: 0.8rem;
-  }
-  .role-free .role-name { color: var(--silver-bright); }
-  .role-vip .role-name {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .role-desc { color: var(--text-dim); font-size: 1rem; font-weight: 300; line-height: 1.8; margin-bottom: 1.5rem; }
-  .role-perks { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem; }
-  .role-perks li {
-    display: flex; align-items: center; gap: 0.8rem;
-    font-size: 0.95rem; color: var(--silver);
-  }
-  .role-perks li::before {
-    content: '▸'; font-size: 0.7rem; flex-shrink: 0;
-  }
-  .role-free .role-perks li::before { color: var(--purple-bright); }
-  .role-vip .role-perks li::before { color: var(--gold-bright); }
-  .role-price {
-    font-family: 'Cinzel Decorative', serif; font-size: 2rem; font-weight: 900;
-    margin-bottom: 1.5rem;
-  }
-  .role-free .role-price { color: var(--silver-dim); }
-  .role-vip .role-price {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .role-price span { font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; color: var(--text-dim); font-weight: 300; }
-  .btn-vip {
-    display: inline-flex; align-items: center; gap: 0.6rem;
-    background: linear-gradient(135deg, var(--gold) 0%, #b8891a 100%);
-    border: 1px solid var(--gold-glow);
-    color: #0d0b14; padding: 0.85rem 2rem;
-    font-family: 'Cinzel', serif; font-size: 0.8rem; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    border-radius: 4px; text-decoration: none;
-    transition: all 0.3s;
-  }
-  .btn-vip:hover { box-shadow: 0 0 32px rgba(201,162,39,0.6); transform: translateY(-2px); }
+/* ── STATS STRIP ── */
+#stats{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.stat-item{padding:3rem 2rem;text-align:center;border-right:1px solid var(--border);position:relative;overflow:hidden}
+.stat-item:last-child{border-right:none}
+.stat-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transform:scaleX(0);transition:transform .5s}
+.stat-item:hover::after{transform:scaleX(1)}
+.stat-n{font-family:'Cinzel',serif;font-size:2.8rem;font-weight:700;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.stat-l{font-size:.8rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:.4rem}
 
-  /* ─── SHOP / PLUGINS ─── */
-  #shop { padding: 6rem 0; }
-  .shop-filters {
-    display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;
-  }
-  .filter-btn {
-    background: transparent; border: 1px solid var(--border);
-    color: var(--silver-dim);
-    padding: 0.45rem 1.3rem; border-radius: 100px;
-    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .filter-btn:hover, .filter-btn.active {
-    background: rgba(124,58,237,0.2); border-color: var(--purple-bright);
-    color: var(--purple-glow); cursor: none;
-  }
-  .plugins-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;
-  }
-  .plugin-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px; overflow: hidden;
-    transition: all 0.4s; cursor: none;
-    position: relative;
-  }
-  .plugin-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(124,58,237,0.5);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-  .plugin-header {
-    padding: 1.5rem;
-    background: linear-gradient(135deg, rgba(124,58,237,0.12) 0%, transparent 100%);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 1rem;
-  }
-  .plugin-icon {
-    width: 48px; height: 48px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem;
-    background: rgba(124,58,237,0.15); border: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .plugin-meta { flex: 1; }
-  .plugin-name {
-    font-family: 'Cinzel', serif; font-weight: 600; font-size: 0.95rem;
-    color: var(--silver-bright); margin-bottom: 0.2rem;
-  }
-  .plugin-cat {
-    font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .plugin-tag {
-    font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 2px;
-    text-transform: uppercase; padding: 0.2rem 0.7rem; border-radius: 100px;
-    flex-shrink: 0;
-  }
-  .tag-vip { background: rgba(201,162,39,0.15); color: var(--gold-bright); border: 1px solid var(--border-gold); }
-  .tag-free { background: rgba(124,58,237,0.15); color: var(--purple-glow); border: 1px solid var(--border); }
-  .tag-hot { background: rgba(220,38,38,0.2); color: #f87171; border: 1px solid rgba(220,38,38,0.3); }
-  .plugin-body { padding: 1.5rem; }
-  .plugin-desc { color: var(--text-dim); font-size: 0.95rem; font-weight: 300; line-height: 1.7; margin-bottom: 1.2rem; }
-  .plugin-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.2rem 1.5rem;
-    border-top: 1px solid var(--border);
-  }
-  .plugin-price {
-    font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; font-weight: 900;
-  }
-  .price-free { color: var(--purple-glow); }
-  .price-paid {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .btn-download {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.5rem 1.2rem; border-radius: 4px;
-    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase;
-    text-decoration: none; transition: all 0.2s; cursor: none;
-  }
-  .btn-dl-free { background: rgba(124,58,237,0.2); border: 1px solid var(--border); color: var(--purple-glow); }
-  .btn-dl-free:hover { background: rgba(124,58,237,0.35); box-shadow: 0 0 16px rgba(124,58,237,0.3); }
-  .btn-dl-vip { background: rgba(201,162,39,0.15); border: 1px solid var(--border-gold); color: var(--gold-bright); }
-  .btn-dl-vip:hover { background: rgba(201,162,39,0.25); box-shadow: 0 0 16px rgba(201,162,39,0.3); }
-  .btn-dl-locked { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim); }
+/* ── PARALLAX BANNER ── */
+.px-banner{height:480px;position:relative;overflow:hidden}
+.px-inner{position:absolute;inset:-25%;background-size:cover;background-position:center;will-change:transform}
+.px-overlay{position:absolute;inset:0;z-index:1;
+  background:rgba(9,8,15,.65);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:1rem}
+.px-title{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,4.5rem);font-weight:900;
+  color:#fff;text-shadow:0 0 40px var(--purple-glow)}
+.px-sub{font-size:1rem;color:var(--silver-dim);max-width:420px}
 
-  /* ─── SERVICIOS ─── */
-  #servicios { padding: 6rem 0; }
-  .servicios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-  .servicio-card {
-    background: var(--card2);
-    border: 1px solid var(--border);
-    border-radius: 12px; padding: 2.5rem;
-    position: relative; overflow: hidden;
-    transition: all 0.4s;
-  }
-  .servicio-card:hover { transform: translateY(-8px); border-color: rgba(201,162,39,0.4); }
-  .servicio-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--purple), var(--gold-bright));
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .servicio-card:hover::before { opacity: 1; }
-  .servicio-num {
-    font-family: 'Cinzel Decorative', serif; font-size: 3.5rem; font-weight: 900;
-    color: rgba(124,58,237,0.15); position: absolute; top: 1rem; right: 1.5rem;
-    line-height: 1;
-  }
-  .servicio-icon {
-    width: 64px; height: 64px; border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem; margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, rgba(45,27,105,0.5), rgba(124,58,237,0.2));
-    border: 1px solid var(--border);
-  }
-  .servicio-name {
-    font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 900;
-    color: var(--silver-bright); margin-bottom: 0.8rem; letter-spacing: 1px;
-  }
-  .servicio-desc { color: var(--text-dim); font-size: 0.95rem; font-weight: 300; line-height: 1.8; margin-bottom: 1.8rem; }
-  .servicio-features { list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.6rem; }
-  .servicio-features li {
-    display: flex; align-items: center; gap: 0.6rem;
-    font-size: 0.9rem; color: var(--silver);
-  }
-  .servicio-features li::before { content: '✦'; font-size: 0.5rem; color: var(--gold); flex-shrink: 0; }
-  .servicio-price-area { margin-bottom: 1.5rem; }
-  .servicio-desde { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.3rem; }
-  .servicio-price {
-    font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; font-weight: 900;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-glow) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .servicio-price span { font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; color: var(--text-dim); font-weight: 300; }
-  .btn-contratar {
-    display: flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%;
-    background: linear-gradient(135deg, var(--purple-deep) 0%, rgba(124,58,237,0.4) 100%);
-    border: 1px solid var(--purple-bright);
-    color: var(--silver-bright); padding: 0.85rem 1rem;
-    font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase;
-    border-radius: 6px; text-decoration: none;
-    transition: all 0.3s; cursor: none;
-  }
-  .btn-contratar:hover { box-shadow: 0 0 28px rgba(124,58,237,0.5); background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%); }
+/* ── SHOP SECTION ── */
+#shop{background:var(--bg2)}
+.filter-bar{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2.5rem}
+.filter-btn{font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  padding:.4rem 1rem;border:1px solid var(--border);border-radius:20px;
+  color:var(--muted);background:transparent;cursor:none;transition:all .2s}
+.filter-btn.active,.filter-btn:hover{border-color:var(--purple-light);color:var(--purple-light);background:rgba(124,58,237,.1)}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem}
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;
+  transition:transform .3s,border-color .3s,box-shadow .3s;position:relative}
+.product-card:hover{transform:translateY(-6px);border-color:var(--purple-light);box-shadow:0 16px 40px rgba(124,58,237,.22)}
+.product-card.vip-card{border-color:var(--border-gold)}
+.product-card.vip-card:hover{border-color:var(--gold);box-shadow:0 16px 40px rgba(245,158,11,.2)}
+.card-img{height:160px;position:relative;overflow:hidden}
+.card-img-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:4rem;transition:transform .6s ease}
+.product-card:hover .card-img-inner{transform:scale(1.12)}
+.card-vip-tag{position:absolute;top:.7rem;right:.7rem;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  color:#0a0500;font-size:.6rem;font-family:'JetBrains Mono',monospace;
+  padding:.22rem .7rem;border-radius:20px;font-weight:700;letter-spacing:.08em}
+.card-free-tag{position:absolute;top:.7rem;right:.7rem;
+  background:rgba(124,58,237,.7);color:#fff;font-size:.6rem;
+  font-family:'JetBrains Mono',monospace;padding:.22rem .7rem;border-radius:20px;letter-spacing:.08em}
+.card-body{padding:1.4rem}
+.card-cat{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--purple-light);
+  letter-spacing:.18em;text-transform:uppercase;margin-bottom:.5rem}
+.card-name{font-family:'Cinzel',serif;font-size:1rem;font-weight:600;color:#fff;margin-bottom:.5rem}
+.card-desc{font-size:.85rem;color:var(--muted);line-height:1.5;margin-bottom:1.2rem}
+.card-foot{display:flex;align-items:center;justify-content:space-between}
+.card-price{font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;
+  background:linear-gradient(90deg,var(--gold-light),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card-price.free-price{background:linear-gradient(90deg,var(--purple-light),#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card-btn{font-size:.7rem;font-family:'Outfit',sans-serif;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;
+  padding:.5rem 1.1rem;border-radius:3px;text-decoration:none;cursor:none;transition:all .2s;border:none}
+.card-btn-buy{background:linear-gradient(135deg,var(--purple-dim),var(--purple));color:#fff}
+.card-btn-buy:hover{box-shadow:0 0 14px var(--purple-glow)}
+.card-btn-vip{background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:#0a0500}
+.card-btn-vip:hover{box-shadow:0 0 14px rgba(245,158,11,.4)}
+.card-btn-dl{background:transparent;color:var(--purple-light);border:1px solid var(--border)}
+.card-btn-dl:hover{border-color:var(--purple-light);background:rgba(124,58,237,.1)}
 
-  /* ─── SOCIAL / DISCORD ─── */
-  #comunidad { padding: 6rem 0; }
-  .discord-banner {
-    background: linear-gradient(135deg, rgba(88,101,242,0.2) 0%, rgba(45,27,105,0.4) 50%, rgba(88,101,242,0.1) 100%);
-    border: 1px solid rgba(88,101,242,0.4);
-    border-radius: 16px; padding: 4rem;
-    text-align: center; margin-bottom: 3rem; position: relative; overflow: hidden;
-  }
-  .discord-banner::before {
-    content: ''; position: absolute; top: -40%; right: -10%;
-    width: 400px; height: 400px;
-    background: radial-gradient(ellipse, rgba(88,101,242,0.15) 0%, transparent 70%);
-  }
-  .discord-logo {
-    font-size: 4rem; margin-bottom: 1rem; display: block;
-  }
-  .discord-title {
-    font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; font-weight: 900;
-    color: #7289da; margin-bottom: 0.8rem;
-  }
-  .discord-desc { color: var(--text-dim); font-size: 1rem; font-weight: 300; margin-bottom: 2rem; }
-  .btn-discord {
-    display: inline-flex; align-items: center; gap: 0.8rem;
-    background: #5865f2; border: 1px solid rgba(88,101,242,0.8);
-    color: #fff; padding: 0.9rem 2.4rem;
-    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase;
-    border-radius: 6px; text-decoration: none;
-    transition: all 0.3s;
-  }
-  .btn-discord:hover { background: #4752c4; box-shadow: 0 0 28px rgba(88,101,242,0.5); transform: translateY(-2px); }
-  .socials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
-  .social-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 1.8rem;
-    display: flex; align-items: center; gap: 1.2rem;
-    text-decoration: none; transition: all 0.3s;
-  }
-  .social-card:hover { transform: translateY(-4px); }
-  .social-icon { font-size: 1.8rem; flex-shrink: 0; }
-  .social-name {
-    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
-    letter-spacing: 1px; margin-bottom: 0.2rem;
-  }
-  .social-handle { font-size: 0.85rem; color: var(--text-dim); font-weight: 300; }
-  .social-instagram:hover { border-color: rgba(225,48,108,0.5); background: rgba(225,48,108,0.05); }
-  .social-instagram .social-name { color: #f77737; }
-  .social-tiktok:hover { border-color: rgba(105,201,208,0.5); background: rgba(105,201,208,0.05); }
-  .social-tiktok .social-name { color: #69c9d0; }
-  .social-youtube:hover { border-color: rgba(255,0,0,0.4); background: rgba(255,0,0,0.05); }
-  .social-youtube .social-name { color: #ff0000; }
-  .social-twitter:hover { border-color: rgba(29,161,242,0.4); background: rgba(29,161,242,0.05); }
-  .social-twitter .social-name { color: #1da1f2; }
+/* ── PARALLAX 2 ── */
+/* reutiliza .px-banner */
 
-  /* ─── CONTACTO ─── */
-  #contacto { padding: 6rem 0; }
-  .contacto-inner {
-    background: var(--card2); border: 1px solid var(--border);
-    border-radius: 16px; padding: 4rem;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
-  }
-  .contacto-info-title {
-    font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; font-weight: 900;
-    color: var(--silver-bright); margin-bottom: 1rem;
-  }
-  .contacto-info-desc { color: var(--text-dim); font-size: 1rem; font-weight: 300; line-height: 1.8; margin-bottom: 2rem; }
-  .contact-methods { display: flex; flex-direction: column; gap: 1rem; }
-  .contact-method {
-    display: flex; align-items: center; gap: 1rem;
-    background: rgba(124,58,237,0.08); border: 1px solid var(--border);
-    border-radius: 8px; padding: 1rem 1.2rem;
-  }
-  .cm-icon { font-size: 1.2rem; flex-shrink: 0; }
-  .cm-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.15rem; }
-  .cm-value { font-size: 0.9rem; color: var(--silver); font-weight: 500; }
-  .contacto-form { display: flex; flex-direction: column; gap: 1.2rem; }
-  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-  .form-label {
-    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .form-input, .form-textarea {
-    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-    border-radius: 6px; padding: 0.85rem 1rem;
-    color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 400;
-    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-    resize: none;
-  }
-  .form-input:focus, .form-textarea:focus {
-    border-color: var(--purple-bright);
-    box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
-  }
-  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-dim); }
-  .btn-enviar {
-    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
-    border: 1px solid var(--purple-bright);
-    color: #fff; padding: 1rem;
-    font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600;
-    letter-spacing: 2px; text-transform: uppercase;
-    border-radius: 6px; cursor: none; transition: all 0.3s; margin-top: 0.5rem;
-  }
-  .btn-enviar:hover { box-shadow: 0 0 28px rgba(124,58,237,0.5); transform: translateY(-2px); }
+/* ── ROLES/PLANS ── */
+#plans{background:var(--surface)}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:3rem}
+.plan-card{border:1px solid var(--border);border-radius:6px;padding:2.5rem 2rem;
+  background:var(--bg2);position:relative;overflow:hidden;transition:transform .3s,border-color .3s}
+.plan-card:hover{transform:translateY(-5px)}
+.plan-card.vip{border-color:var(--border-gold);background:linear-gradient(180deg,rgba(245,158,11,.06),var(--bg2))}
+.plan-card.vip:hover{border-color:var(--gold);box-shadow:0 16px 40px rgba(245,158,11,.15)}
+.plan-glow{position:absolute;top:-60px;right:-60px;width:180px;height:180px;
+  border-radius:50%;filter:blur(60px);pointer-events:none}
+.plan-glow-purple{background:radial-gradient(circle,rgba(124,58,237,.3),transparent)}
+.plan-glow-gold{background:radial-gradient(circle,rgba(245,158,11,.3),transparent)}
+.plan-icon{font-size:2.4rem;margin-bottom:1.2rem;display:block}
+.plan-type{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.22em;
+  text-transform:uppercase;margin-bottom:.5rem}
+.plan-type.user{color:var(--silver-dim)}.plan-type.vip{color:var(--gold)}
+.plan-name{font-family:'Cinzel',serif;font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:.5rem}
+.plan-price{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:700;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1;margin-bottom:.3rem}
+.plan-price.free-p{background:none;-webkit-text-fill-color:var(--silver)}
+.plan-period{font-size:.78rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:2rem}
+.plan-feats{list-style:none;margin-bottom:2rem}
+.plan-feats li{font-size:.88rem;color:var(--muted);padding:.5rem 0;
+  border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:.6rem}
+.plan-feats li .chk{color:var(--purple-light);font-size:.75rem;flex-shrink:0}
+.plan-feats li.gold .chk{color:var(--gold)}
+.plan-feats li.locked{opacity:.45}
+.plan-feats li.locked .chk::before{content:'✕';color:var(--muted)}
+.btn-plan{width:100%;text-align:center;display:block;font-family:'Outfit',sans-serif;
+  font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:.9rem;border-radius:3px;text-decoration:none;cursor:none;transition:all .2s}
+.btn-plan-ghost{border:1px solid var(--border);color:var(--silver);background:transparent}
+.btn-plan-ghost:hover{border-color:var(--purple-light);color:var(--purple-light)}
+.btn-plan-vip{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light));color:#0a0500;font-weight:700;border:none}
+.btn-plan-vip:hover{box-shadow:0 0 24px rgba(245,158,11,.5)}
 
-  /* ─── FOOTER ─── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 3rem;
-    background: rgba(6,6,8,0.9);
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
-    gap: 2rem;
-  }
-  .footer-logo {
-    font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; font-weight: 900;
-    background: linear-gradient(135deg, var(--purple-bright) 0%, var(--silver-bright) 50%, var(--gold-bright) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .footer-copy { color: var(--text-dim); font-size: 0.85rem; font-weight: 300; }
-  .footer-links { display: flex; gap: 2rem; }
-  .footer-links a {
-    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--text-dim); text-decoration: none; transition: color 0.2s;
-  }
-  .footer-links a:hover { color: var(--purple-glow); }
+/* ── SERVICES ── */
+#services{background:var(--bg)}
+.srv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;margin-top:3rem}
+.srv-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2.5rem 2rem;
+  position:relative;overflow:hidden;transition:transform .3s,border-color .3s}
+.srv-card:hover{transform:translateY(-5px);border-color:var(--purple-light)}
+.srv-card.featured{border-color:var(--border-gold)}
+.srv-card.featured:hover{border-color:var(--gold);box-shadow:0 16px 40px rgba(245,158,11,.15)}
+.srv-badge-wrap{position:absolute;top:1.2rem;right:1.2rem}
+.srv-badge{font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:#0a0500;
+  padding:.22rem .75rem;border-radius:20px;font-weight:700;letter-spacing:.08em}
+.srv-icon{font-size:2.6rem;margin-bottom:1.4rem;display:block;filter:drop-shadow(0 0 10px var(--purple-glow))}
+.srv-tag{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--purple-light);
+  letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem}
+.srv-name{font-family:'Cinzel',serif;font-size:1.45rem;font-weight:700;color:#fff;margin-bottom:.6rem}
+.srv-desc{font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:1.6rem}
+.srv-from{font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.srv-price{font-family:'Cinzel',serif;font-size:2.5rem;font-weight:700;
+  background:linear-gradient(90deg,var(--gold-light),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:.3rem}
+.srv-price span{font-size:1rem;vertical-align:super}
+.srv-period{font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:1.8rem}
+.srv-feats{list-style:none;margin-bottom:1.8rem}
+.srv-feats li{font-size:.88rem;color:var(--muted);padding:.45rem 0;
+  border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:.6rem}
+.srv-feats li::before{content:'▸';color:var(--purple-light);font-size:.65rem;flex-shrink:0}
+.btn-srv{display:block;width:100%;text-align:center;font-family:'Outfit',sans-serif;
+  font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:.9rem;border-radius:3px;text-decoration:none;cursor:none;transition:all .2s}
+.btn-srv-outline{border:1px solid var(--border);color:var(--purple-light);background:transparent}
+.btn-srv-outline:hover{border-color:var(--purple-light);background:rgba(124,58,237,.1)}
+.btn-srv-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:#0a0500;font-weight:700;border:none}
+.btn-srv-gold:hover{box-shadow:0 0 22px rgba(245,158,11,.5)}
 
-  /* ─── GLOW LINE ─── */
-  .glow-line {
-    position: absolute; left: 50%; transform: translateX(-50%);
-    width: 1px; background: linear-gradient(transparent, var(--purple-bright), transparent);
-    opacity: 0.3; pointer-events: none;
-  }
+/* ── PARALLAX 3 ── */
 
-  /* ─── TOAST ─── */
-  .toast {
-    position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
-    background: var(--card2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 1rem 1.5rem;
-    font-family: 'Cinzel', sans-serif; font-size: 0.85rem; color: var(--silver-bright);
-    display: flex; align-items: center; gap: 0.8rem;
-    transform: translateX(200%); opacity: 0;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.2);
-    max-width: 350px;
-  }
-  .toast.show { transform: translateX(0); opacity: 1; }
-  .toast-icon { font-size: 1.2rem; }
+/* ── COMMUNITY ── */
+#community{background:var(--surface)}
+.comm-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.comm-text h3{font-family:'Cinzel',serif;font-size:1.9rem;font-weight:700;color:#fff;margin-bottom:1rem}
+.comm-text p{font-size:1rem;color:var(--muted);line-height:1.65;margin-bottom:1.4rem}
+.dc-btn{display:inline-flex;align-items:center;gap:.7rem;
+  background:#5865F2;color:#fff;border:none;padding:1rem 2rem;border-radius:4px;
+  text-decoration:none;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;transition:all .2s;cursor:none}
+.dc-btn:hover{background:#4752d6;box-shadow:0 0 22px rgba(88,101,242,.45)}
+.comm-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.comm-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.5rem;transition:all .25s}
+.comm-card:hover{border-color:rgba(88,101,242,.6);transform:translateY(-3px)}
+.comm-card-ic{font-size:1.8rem;margin-bottom:.8rem;display:block}
+.comm-card-n{font-family:'Cinzel',serif;font-size:.85rem;font-weight:600;color:#fff;margin-bottom:.3rem}
+.comm-card-v{font-size:1.3rem;color:#5865F2;font-family:'Cinzel',serif;font-weight:700}
+.comm-card-s{font-size:.75rem;color:var(--muted);margin-top:.2rem}
 
-  /* Scroll reveal */
-  .reveal { opacity: 0; transform: translateY(30px); }
+/* ── SOCIAL ── */
+#social{background:var(--bg2)}
+.soc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.2rem;margin-top:3rem}
+.soc-card{border:1px solid var(--border);border-radius:5px;padding:2rem 1.5rem;text-align:center;
+  text-decoration:none;transition:all .3s;display:flex;flex-direction:column;align-items:center;gap:1rem;
+  background:var(--surface)}
+.soc-card:hover{transform:translateY(-5px)}
+.soc-card.ig:hover{border-color:#E1306C;box-shadow:0 0 22px rgba(225,48,108,.2)}
+.soc-card.dc:hover{border-color:#5865F2;box-shadow:0 0 22px rgba(88,101,242,.22)}
+.soc-card.gh:hover{border-color:#fff;box-shadow:0 0 18px rgba(255,255,255,.1)}
+.soc-card.yt:hover{border-color:#ff0000;box-shadow:0 0 22px rgba(255,0,0,.2)}
+.soc-card.tw:hover{border-color:#1DA1F2;box-shadow:0 0 22px rgba(29,161,242,.2)}
+.soc-iw{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid currentColor;transition:all .3s}
+.soc-card.ig .soc-iw{color:#E1306C;background:rgba(225,48,108,.08)}
+.soc-card.dc .soc-iw{color:#5865F2;background:rgba(88,101,242,.08)}
+.soc-card.gh .soc-iw{color:#fff;background:rgba(255,255,255,.06)}
+.soc-card.yt .soc-iw{color:#ff0000;background:rgba(255,0,0,.08)}
+.soc-card.tw .soc-iw{color:#1DA1F2;background:rgba(29,161,242,.08)}
+.soc-name{font-family:'Cinzel',serif;font-size:.8rem;font-weight:600;color:#fff}
+.soc-handle{font-size:.78rem;color:var(--muted)}
 
-  @media (max-width: 900px) {
-    nav { padding: 0 1.5rem; }
-    .nav-links { display: none; }
-    .section-inner { padding: 0 1.5rem; }
-    .roles-grid, .servicios-grid { grid-template-columns: 1fr; }
-    .contacto-inner { grid-template-columns: 1fr; gap: 2rem; }
-    .hero-stats { gap: 2rem; }
-    footer { flex-direction: column; text-align: center; }
-    .footer-links { justify-content: center; }
-    .divider { margin: 3rem 1.5rem; }
-  }
+/* ── CONTACT ── */
+#contact{background:var(--surface)}
+.contact-inner{max-width:680px;margin:0 auto;text-align:center}
+.contact-inner p{font-size:1.05rem;color:var(--muted);line-height:1.65;margin-bottom:2.5rem}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;text-align:left;margin-bottom:2.5rem}
+.c-field{display:flex;flex-direction:column;gap:.4rem}
+.c-field.full{grid-column:1/-1}
+.c-field label{font-size:.75rem;font-family:'JetBrains Mono',monospace;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.c-field input,.c-field select,.c-field textarea{
+  background:var(--bg2);border:1px solid var(--border);border-radius:3px;
+  padding:.75rem 1rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;
+  outline:none;transition:border-color .2s;width:100%}
+.c-field input:focus,.c-field select:focus,.c-field textarea:focus{border-color:var(--purple-light)}
+.c-field select{cursor:none}.c-field textarea{resize:vertical;min-height:100px}
+.c-field input::placeholder,.c-field textarea::placeholder{color:var(--muted);opacity:.6}
+.send-btn{width:100%;background:linear-gradient(135deg,var(--purple-dim),var(--purple),var(--purple-light));
+  color:#fff;border:none;padding:1rem;border-radius:3px;
+  font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:all .25s}
+.send-btn:hover{box-shadow:0 0 28px var(--purple-glow);transform:translateY(-2px)}
+
+/* ── FOOTER ── */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{font-family:'Cinzel',serif;font-weight:900;font-size:1.1rem;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.footer-copy{font-size:.75rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* ── ANIM HELPERS ── */
+.fu{opacity:0;transform:translateY(45px)}
+.fi{opacity:0}
+.si{opacity:0;transform:scale(.88)}
+
+/* colored bg helpers */
+.bg-mc1{background:linear-gradient(135deg,#0d0020,#150030,#070012)}
+.bg-mc2{background:linear-gradient(135deg,#06001a,#0a0025,#12003a)}
+.bg-mc3{background:linear-gradient(135deg,#1a0a00,#120018,#030015)}
 </style>
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="cur-ring"></div>
+<div class="gtex"></div>
 
 <!-- NAV -->
-<nav id="navbar">
-  <a href="#" class="nav-logo">MCMARKET</a>
+<nav id="mainNav">
+  <div class="logo">MC<span style="background:linear-gradient(90deg,var(--purple-light),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent">MARKET</span></div>
   <ul class="nav-links">
     <li><a href="#shop">Tienda</a></li>
-    <li><a href="#roles">Rangos</a></li>
-    <li><a href="#servicios">Servicios</a></li>
-    <li><a href="#comunidad">Comunidad</a></li>
-    <li><a href="#contacto" class="nav-cta">Contactar</a></li>
+    <li><a href="#plans">Planes</a></li>
+    <li><a href="#services">Servicios</a></li>
+    <li><a href="#community">Comunidad</a></li>
+    <li><a href="#contact">Contacto</a></li>
   </ul>
+  <div class="nav-actions">
+    <a href="#" class="nav-btn nav-btn-ghost">Ingresar</a>
+    <a href="#plans" class="nav-btn nav-btn-vip">💎 VIP</a>
+  </div>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-particles" id="particles"></div>
-
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-badge">
-      <div class="hero-badge-dot"></div>
-      Tienda Premium de Minecraft
+    <div class="hero-eyebrow">✦ Plataforma Premium de Minecraft ✦</div>
+    <h1 class="hero-title">MC<br>MARKET</h1>
+    <p class="hero-sub">Plugins · Configs · Servidores · Web</p>
+    <p class="hero-desc">La tienda más completa de recursos y servicios para servidores de Minecraft. Calidad premium, precios justos.</p>
+    <div class="hero-ctas">
+      <a href="#shop" class="btn btn-gold">🛒 Explorar Tienda</a>
+      <a href="#plans" class="btn btn-purple">💎 Ver Planes VIP</a>
     </div>
-    <h1 class="hero-title">
-      <span class="line1">MCMARKET</span>
-      <span class="line2">PREMIUM</span>
-    </h1>
-    <p class="hero-sub">
-      La plataforma definitiva para <em>plugins</em>, <em>configuraciones</em> y <em>servicios profesionales</em><br>
-      para servidores de Minecraft de alto rendimiento.
-    </p>
-    <div class="hero-btns">
-      <a href="#shop" class="btn-primary">⚡ Explorar Tienda</a>
-      <a href="#servicios" class="btn-secondary">🛠 Contratar Servicios</a>
+    <div class="vip-badge">
+      <div class="vip-badge-icon">💎</div>
+      Acceso VIP exclusivo a todos los recursos premium
     </div>
   </div>
-
-  <div class="hero-stats">
-    <div class="stat">
-      <span class="stat-num">500+</span>
-      <span class="stat-label">Plugins</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">2.4K</span>
-      <span class="stat-label">Usuarios</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">99%</span>
-      <span class="stat-label">Satisfacción</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">24/7</span>
-      <span class="stat-label">Soporte</span>
-    </div>
-  </div>
-
-  <div class="hero-scroll">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
+  <div class="scroll-arr">
+    <span>SCROLL</span>
+    <div class="arrow-line"></div>
   </div>
 </section>
 
-<!-- RANGOS VIP -->
-<section id="roles">
-  <div class="section-inner">
-    <div class="section-header reveal">
-      <div class="section-tag">Sistema de Rangos</div>
-      <h2 class="section-title">Elige Tu Acceso</h2>
-      <p class="section-desc">Desbloquea contenido exclusivo y accede a plugins premium con el rango VIP.</p>
-    </div>
-    <div class="roles-grid">
-      <div class="role-card role-free reveal">
-        <div class="role-icon">👤</div>
-        <div class="role-badge">Gratuito</div>
-        <div class="role-name">Usuario</div>
-        <p class="role-desc">Acceso básico a la plataforma con descarga de plugins gratuitos y comunidad.</p>
-        <ul class="role-perks">
-          <li>Descarga de plugins FREE</li>
-          <li>Acceso al Discord oficial</li>
-          <li>Actualizaciones básicas</li>
-          <li>Soporte por tickets</li>
-        </ul>
-        <div class="role-price">$0 <span>/ para siempre</span></div>
-        <a href="#shop" class="btn-primary">Empezar Gratis</a>
-      </div>
-      <div class="role-card role-vip reveal">
-        <div class="role-icon">💎</div>
-        <div class="role-badge">Exclusivo</div>
-        <div class="role-name">VIP Premium</div>
-        <p class="role-desc">Acceso total a plugins premium, configs exclusivas y soporte prioritario.</p>
-        <ul class="role-perks">
-          <li>Todo el contenido FREE incluido</li>
-          <li>Plugins PREMIUM ilimitados</li>
-          <li>Configs exclusivas de alto nivel</li>
-          <li>Canal VIP en Discord</li>
-          <li>Soporte prioritario 24/7</li>
-          <li>Acceso anticipado a lanzamientos</li>
-          <li>Badge VIP en el servidor</li>
-        </ul>
-        <div class="role-price">$9.99 <span>/ mes</span></div>
-        <a href="#contacto" class="btn-vip">💎 Obtener VIP</a>
-      </div>
-    </div>
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-item fu"><div class="stat-n"><span class="cnt" data-t="350">0</span>+</div><div class="stat-l">Plugins disponibles</div></div>
+    <div class="stat-item fu"><div class="stat-n"><span class="cnt" data-t="4200">0</span>+</div><div class="stat-l">Usuarios registrados</div></div>
+    <div class="stat-item fu"><div class="stat-n"><span class="cnt" data-t="980">0</span>+</div><div class="stat-l">Descargas mensuales</div></div>
+    <div class="stat-item fu"><div class="stat-n"><span class="cnt" data-t="99">0</span>%</div><div class="stat-l">Satisfacción clientes</div></div>
+    <div class="stat-item fu"><div class="stat-n"><span class="cnt" data-t="24">0</span>h</div><div class="stat-l">Soporte disponible</div></div>
   </div>
 </section>
 
-<div class="divider"></div>
+<!-- PARALLAX BANNER 1 -->
+<div class="px-banner" id="px1">
+  <div class="px-inner bg-mc1" id="px1i">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.15" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <pattern id="g1" width="60" height="60" patternUnits="userSpaceOnUse">
+          <rect width="60" height="60" fill="none" stroke="#7c3aed" stroke-width=".6"/>
+          <rect x="3" y="3" width="24" height="24" fill="#4c1d95" opacity=".4"/>
+          <rect x="33" y="33" width="24" height="24" fill="#7c3aed" opacity=".2"/>
+        </pattern>
+      </defs>
+      <rect width="1200" height="480" fill="url(#g1)"/>
+      <circle cx="200" cy="120" r="80" fill="none" stroke="#a855f7" stroke-width=".8" stroke-dasharray="8,4" opacity=".4"/>
+      <circle cx="1000" cy="360" r="120" fill="none" stroke="#f59e0b" stroke-width=".6" opacity=".3"/>
+      <rect x="400" y="100" width="400" height="280" fill="none" stroke="#7c3aed" stroke-width=".5" opacity=".3"/>
+    </svg>
+  </div>
+  <div class="px-overlay">
+    <div class="hero-eyebrow" style="display:inline-block">// Premium Store</div>
+    <div class="px-title">+350 Recursos<br><span style="background:linear-gradient(90deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Disponibles</span></div>
+    <p class="px-sub">Plugins, configs, mapas y más para llevar tu servidor al siguiente nivel</p>
+  </div>
+</div>
 
-<!-- SHOP / PLUGINS -->
+<!-- SHOP -->
 <section id="shop">
-  <div class="section-inner">
-    <div class="section-header reveal">
-      <div class="section-tag">Tienda MCMarket</div>
-      <h2 class="section-title">Plugins & Configs</h2>
-      <p class="section-desc">Catálogo curado de los mejores plugins y configuraciones para tu servidor.</p>
+  <div class="wrap">
+    <div class="s-label">Tienda</div>
+    <h2 class="s-title">Nuestros <span class="hl">Productos</span></h2>
+    <p style="font-size:1rem;color:var(--muted);max-width:520px;margin-bottom:2rem">Recursos verificados y de alta calidad para servidores Minecraft. Filtrados por categoría.</p>
+    <div class="filter-bar">
+      <button class="filter-btn active">Todos</button>
+      <button class="filter-btn">🔌 Plugins</button>
+      <button class="filter-btn">⚙️ Configs</button>
+      <button class="filter-btn">🗺️ Mapas</button>
+      <button class="filter-btn">🎨 ResourcePack</button>
+      <button class="filter-btn">💎 VIP Only</button>
     </div>
-    <div class="shop-filters">
-      <button class="filter-btn active" onclick="filterPlugins('all', this)">Todos</button>
-      <button class="filter-btn" onclick="filterPlugins('free', this)">Gratuitos</button>
-      <button class="filter-btn" onclick="filterPlugins('vip', this)">VIP Premium</button>
-      <button class="filter-btn" onclick="filterPlugins('pvp', this)">PvP</button>
-      <button class="filter-btn" onclick="filterPlugins('economia', this)">Economía</button>
-      <button class="filter-btn" onclick="filterPlugins('lobby', this)">Lobby</button>
+    <div class="shop-grid">
+
+      <!-- Card 1 FREE -->
+      <div class="product-card fu">
+        <div class="card-img" style="background:linear-gradient(135deg,#0d0020,#1a003a)">
+          <div class="card-img-inner">⚔️</div>
+          <div class="card-free-tag">FREE</div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Plugin · PvP</div>
+          <div class="card-name">KitBattle Pro</div>
+          <div class="card-desc">Sistema de kits PvP completo con inventarios personalizados, cooldowns y estadísticas.</div>
+          <div class="card-foot">
+            <div class="card-price free-price">Gratis</div>
+            <a href="#" class="card-btn card-btn-dl">⬇ Descargar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 VIP -->
+      <div class="product-card vip-card fu">
+        <div class="card-img" style="background:linear-gradient(135deg,#1a0a00,#2d1500)">
+          <div class="card-img-inner">🏰</div>
+          <div class="card-vip-tag">💎 VIP</div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Config · Economy</div>
+          <div class="card-name">EcoServer Ultimate</div>
+          <div class="card-desc">Config completa de economía con tienda, impuestos, banco, mercado y mucho más.</div>
+          <div class="card-foot">
+            <div class="card-price">$8.99</div>
+            <a href="#plans" class="card-btn card-btn-vip">💎 VIP</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="product-card fu">
+        <div class="card-img" style="background:linear-gradient(135deg,#001520,#002030)">
+          <div class="card-img-inner">🛡️</div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Plugin · Protección</div>
+          <div class="card-name">GuardianPerms</div>
+          <div class="card-desc">Sistema de permisos avanzado compatible con LuckPerms. Roles, grupos y herencias.</div>
+          <div class="card-foot">
+            <div class="card-price">$4.99</div>
+            <a href="#" class="card-btn card-btn-buy">Comprar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 VIP -->
+      <div class="product-card vip-card fu">
+        <div class="card-img" style="background:linear-gradient(135deg,#100020,#1e0038)">
+          <div class="card-img-inner">🗺️</div>
+          <div class="card-vip-tag">💎 VIP</div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Mapa · Survival</div>
+          <div class="card-name">ShadowLands Map</div>
+          <div class="card-desc">Mapa de survival premium 10,000x10,000 bloques con biomas únicos y dungeons.</div>
+          <div class="card-foot">
+            <div class="card-price">$14.99</div>
+            <a href="#plans" class="card-btn card-btn-vip">💎 VIP</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 FREE -->
+      <div class="product-card fu">
+        <div class="card-img" style="background:linear-gradient(135deg,#0a1500,#0d2000)">
+          <div class="card-img-inner">📊</div>
+          <div class="card-free-tag">FREE</div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Plugin · Estadísticas</div>
+          <div class="card-name">StatsTracker Lite</div>
+          <div class="card-desc">Seguimiento de estadísticas de jugadores. Kills, muertes, tiempo jugado y más.</div>
+          <div class="card-foot">
+            <div class="card-price free-price">Gratis</div>
+            <a href="#" class="card-btn card-btn-dl">⬇ Descargar</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="product-card fu">
+        <div class="card-img" style="background:linear-gradient(135deg,#1a0000,#300010)">
+          <div class="card-img-inner">🎪</div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Config · Minijuegos</div>
+          <div class="card-name">ArenaMaster Config</div>
+          <div class="card-desc">Configuración de arenas para minijuegos. Bed Wars, Sky Wars, Murder Mystery incluidos.</div>
+          <div class="card-foot">
+            <div class="card-price">$6.99</div>
+            <a href="#" class="card-btn card-btn-buy">Comprar</a>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="plugins-grid" id="pluginsGrid">
+    <div style="text-align:center;margin-top:3rem">
+      <a href="#" class="btn btn-purple">Ver todos los productos →</a>
+    </div>
+  </div>
+</section>
 
-      <div class="plugin-card reveal" data-cat="free pvp">
-        <div class="plugin-header">
-          <div class="plugin-icon">⚔️</div>
-          <div class="plugin-meta">
-            <div class="plugin-name">KitPvP Ultimate</div>
-            <div class="plugin-cat">PvP · Kits</div>
-          </div>
-          <div class="plugin-tag tag-free">FREE</div>
-        </div>
-        <div class="plugin-body">
-          <p class="plugin-desc">Sistema completo de KitPvP con kits personalizables, arenas y estadísticas.</p>
-        </div>
-        <div class="plugin-footer">
-          <div class="plugin-price price-free">GRATIS</div>
-          <a href="#" class="btn-download btn-dl-free" onclick="showToast('⬇️ Descargando KitPvP Ultimate...', 'success'); return false;">⬇ Descargar</a>
-        </div>
+<!-- PARALLAX BANNER 2 -->
+<div class="px-banner" id="px2">
+  <div class="px-inner bg-mc2" id="px2i">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.12" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <pattern id="hex2" width="70" height="60" patternUnits="userSpaceOnUse">
+          <polygon points="35,0 70,17.5 70,52.5 35,70 0,52.5 0,17.5" fill="none" stroke="#f59e0b" stroke-width=".5"/>
+        </pattern>
+      </defs>
+      <rect width="1200" height="480" fill="url(#hex2)"/>
+      <circle cx="600" cy="240" r="200" fill="none" stroke="#f59e0b" stroke-width="1" opacity=".25" stroke-dasharray="12,6"/>
+      <circle cx="600" cy="240" r="130" fill="rgba(245,158,11,.06)"/>
+    </svg>
+  </div>
+  <div class="px-overlay">
+    <div class="hero-eyebrow" style="display:inline-block">// Exclusivo VIP</div>
+    <div class="px-title">Contenido <span style="background:linear-gradient(90deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Premium</span></div>
+    <p class="px-sub">Accede a los mejores recursos solo disponibles para miembros VIP</p>
+  </div>
+</div>
+
+<!-- PLANS -->
+<section id="plans">
+  <div class="wrap">
+    <div class="s-label">Membresías</div>
+    <h2 class="s-title">Elige tu <span class="hl">Plan</span></h2>
+    <p style="font-size:1rem;color:var(--muted);max-width:520px;margin-bottom:0">Desbloquea el contenido premium y accede a recursos exclusivos de la comunidad.</p>
+    <div class="plans-grid">
+
+      <!-- USER FREE -->
+      <div class="plan-card fu">
+        <div class="plan-glow plan-glow-purple"></div>
+        <span class="plan-icon">👤</span>
+        <div class="plan-type user">Usuario</div>
+        <div class="plan-name">Free Account</div>
+        <div class="plan-price free-p">$0</div>
+        <div class="plan-period">Siempre gratis</div>
+        <ul class="plan-feats">
+          <li><span class="chk">✓</span>Acceso a plugins gratuitos</li>
+          <li><span class="chk">✓</span>Descargas básicas ilimitadas</li>
+          <li><span class="chk">✓</span>Acceso al foro comunidad</li>
+          <li><span class="chk">✓</span>Soporte por Discord</li>
+          <li class="locked"><span class="chk"></span>Plugins premium</li>
+          <li class="locked"><span class="chk"></span>Mapas exclusivos</li>
+          <li class="locked"><span class="chk"></span>Configs VIP</li>
+          <li class="locked"><span class="chk"></span>Soporte prioritario</li>
+        </ul>
+        <a href="#" class="btn-plan btn-plan-ghost">Registrarse gratis</a>
       </div>
 
-      <div class="plugin-card reveal" data-cat="vip economia">
-        <div class="plugin-header">
-          <div class="plugin-icon">💰</div>
-          <div class="plugin-meta">
-            <div class="plugin-name">EconomyPro X</div>
-            <div class="plugin-cat">Economía · Tienda</div>
-          </div>
-          <div class="plugin-tag tag-vip">VIP</div>
-        </div>
-        <div class="plugin-body">
-          <p class="plugin-desc">Sistema económico premium con banco, impuestos, inflación y GUI personalizada.</p>
-        </div>
-        <div class="plugin-footer">
-          <div class="plugin-price price-paid">$4.99</div>
-          <a href="#" class="btn-download btn-dl-vip" onclick="showToast('💎 Requiere rango VIP para descargar.', 'vip'); return false;">💎 VIP</a>
-        </div>
+      <!-- VIP MENSUAL -->
+      <div class="plan-card vip fu">
+        <div class="plan-glow plan-glow-gold"></div>
+        <span class="plan-icon">💎</span>
+        <div class="plan-type vip">⭐ VIP Premium</div>
+        <div class="plan-name">VIP Mensual</div>
+        <div class="plan-price">$9<span style="font-size:1.1rem;vertical-align:super">.99</span></div>
+        <div class="plan-period">/ mes · cancela cuando quieras</div>
+        <ul class="plan-feats">
+          <li class="gold"><span class="chk">✓</span>Todo lo del plan Free</li>
+          <li class="gold"><span class="chk">✓</span>+200 plugins premium</li>
+          <li class="gold"><span class="chk">✓</span>Todos los mapas exclusivos</li>
+          <li class="gold"><span class="chk">✓</span>Configs VIP avanzadas</li>
+          <li class="gold"><span class="chk">✓</span>ResourcePacks premium</li>
+          <li class="gold"><span class="chk">✓</span>Soporte prioritario 24/7</li>
+          <li class="gold"><span class="chk">✓</span>Canal VIP en Discord</li>
+          <li class="gold"><span class="chk">✓</span>Actualizaciones automáticas</li>
+        </ul>
+        <a href="#" class="btn-plan btn-plan-vip">💎 Obtener VIP</a>
       </div>
 
-      <div class="plugin-card reveal" data-cat="vip lobby">
-        <div class="plugin-header">
-          <div class="plugin-icon">🏟️</div>
-          <div class="plugin-meta">
-            <div class="plugin-name">LobbyMaster Elite</div>
-            <div class="plugin-cat">Lobby · Spawn</div>
-          </div>
-          <div class="plugin-tag tag-hot">🔥 HOT</div>
-        </div>
-        <div class="plugin-body">
-          <p class="plugin-desc">Lobby interactivo con NPCs animados, efectos de partículas y menú GUI épico.</p>
-        </div>
-        <div class="plugin-footer">
-          <div class="plugin-price price-paid">$7.99</div>
-          <a href="#" class="btn-download btn-dl-vip" onclick="showToast('💎 Requiere rango VIP para descargar.', 'vip'); return false;">💎 VIP</a>
-        </div>
-      </div>
-
-      <div class="plugin-card reveal" data-cat="free lobby">
-        <div class="plugin-header">
-          <div class="plugin-icon">🌟</div>
-          <div class="plugin-meta">
-            <div class="plugin-name">StarterNPC</div>
-            <div class="plugin-cat">NPCs · Básico</div>
-          </div>
-          <div class="plugin-tag tag-free">FREE</div>
-        </div>
-        <div class="plugin-body">
-          <p class="plugin-desc">Crea NPCs de bienvenida con diálogos y comandos básicos para tu spawn.</p>
-        </div>
-        <div class="plugin-footer">
-          <div class="plugin-price price-free">GRATIS</div>
-          <a href="#" class="btn-download btn-dl-free" onclick="showToast('⬇️ Descargando StarterNPC...', 'success'); return false;">⬇ Descargar</a>
-        </div>
-      </div>
-
-      <div class="plugin-card reveal" data-cat="vip pvp">
-        <div class="plugin-header">
-          <div class="plugin-icon">🛡️</div>
-          <div class="plugin-meta">
-            <div class="plugin-name">AntiCheat Shield</div>
-            <div class="plugin-cat">Seguridad · PvP</div>
-          </div>
-          <div class="plugin-tag tag-vip">VIP</div>
-        </div>
-        <div class="plugin-body">
-          <p class="plugin-desc">Sistema anti-hacks avanzado con detección de killaura, fly, speed y más.</p>
-        </div>
-        <div class="plugin-footer">
-          <div class="plugin-price price-paid">$12.99</div>
-          <a href="#" class="btn-download btn-dl-vip" onclick="showToast('💎 Requiere rango VIP para descargar.', 'vip'); return false;">💎 VIP</a>
-        </div>
-      </div>
-
-      <div class="plugin-card reveal" data-cat="vip economia">
-        <div class="plugin-header">
-          <div class="plugin-icon">🏪</div>
-          <div class="plugin-meta">
-            <div class="plugin-name">ShopGUI Ultimate</div>
-            <div class="plugin-cat">Economía · GUI</div>
-          </div>
-          <div class="plugin-tag tag-vip">VIP</div>
-        </div>
-        <div class="plugin-body">
-          <p class="plugin-desc">Tienda con GUI ultra personalizable, categorías, descuentos y compra en bulk.</p>
-        </div>
-        <div class="plugin-footer">
-          <div class="plugin-price price-paid">$8.99</div>
-          <a href="#" class="btn-download btn-dl-vip" onclick="showToast('💎 Requiere rango VIP para descargar.', 'vip'); return false;">💎 VIP</a>
-        </div>
+      <!-- VIP ANUAL -->
+      <div class="plan-card vip fu">
+        <div class="plan-glow plan-glow-gold"></div>
+        <div class="srv-badge-wrap"><div class="srv-badge">AHORRA 40%</div></div>
+        <span class="plan-icon">👑</span>
+        <div class="plan-type vip">👑 VIP Elite</div>
+        <div class="plan-name">VIP Anual</div>
+        <div class="plan-price">$59<span style="font-size:1.1rem;vertical-align:super">.99</span></div>
+        <div class="plan-period">/ año · equivale a $5/mes</div>
+        <ul class="plan-feats">
+          <li class="gold"><span class="chk">✓</span>Todo lo del plan VIP</li>
+          <li class="gold"><span class="chk">✓</span>Acceso anticipado a nuevos recursos</li>
+          <li class="gold"><span class="chk">✓</span>Descuentos en servicios (20%)</li>
+          <li class="gold"><span class="chk">✓</span>Badge Elite exclusivo</li>
+          <li class="gold"><span class="chk">✓</span>Voz en decisiones del store</li>
+          <li class="gold"><span class="chk">✓</span>1 consulta mensual gratuita</li>
+          <li class="gold"><span class="chk">✓</span>Rol especial en Discord</li>
+          <li class="gold"><span class="chk">✓</span>Acceso beta a productos</li>
+        </ul>
+        <a href="#" class="btn-plan btn-plan-vip">👑 Obtener Elite</a>
       </div>
 
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
+<!-- PARALLAX BANNER 3 -->
+<div class="px-banner" id="px3">
+  <div class="px-inner bg-mc3" id="px3i">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.13" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <pattern id="dots3" width="30" height="30" patternUnits="userSpaceOnUse">
+          <circle cx="15" cy="15" r="1.5" fill="#a855f7" opacity=".8"/>
+        </pattern>
+      </defs>
+      <rect width="1200" height="480" fill="url(#dots3)"/>
+      <rect x="150" y="80" width="900" height="320" fill="none" stroke="#a855f7" stroke-width=".8" opacity=".3"/>
+      <rect x="200" y="130" width="800" height="220" fill="none" stroke="#f59e0b" stroke-width=".5" opacity=".2"/>
+      <circle cx="600" cy="240" r="150" fill="none" stroke="#7c3aed" stroke-width="1" opacity=".2" stroke-dasharray="20,8"/>
+    </svg>
+  </div>
+  <div class="px-overlay">
+    <div class="hero-eyebrow" style="display:inline-block">// Servicios Profesionales</div>
+    <div class="px-title">Hacemos <span style="background:linear-gradient(90deg,var(--purple-light),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Realidad</span></div>
+    <p class="px-sub">Tu servidor, tu sitio web, tu proyecto — nosotros lo construimos</p>
+  </div>
+</div>
 
-<!-- SERVICIOS -->
-<section id="servicios">
-  <div class="section-inner">
-    <div class="section-header reveal">
-      <div class="section-tag">Contrataciones</div>
-      <h2 class="section-title">Servicios Profesionales</h2>
-      <p class="section-desc">Soluciones a medida por expertos en Minecraft y desarrollo web.</p>
-    </div>
-    <div class="servicios-grid">
+<!-- SERVICES / CONTRATAR -->
+<section id="services">
+  <div class="wrap">
+    <div class="s-label">Contrataciones</div>
+    <h2 class="s-title">Servicios <span class="hl">Profesionales</span></h2>
+    <p style="font-size:1rem;color:var(--muted);max-width:520px;margin-bottom:0">Proyectos personalizados entregados con calidad premium y soporte post-entrega incluido.</p>
+    <div class="srv-grid">
 
-      <div class="servicio-card reveal">
-        <div class="servicio-num">01</div>
-        <div class="servicio-icon">🧱</div>
-        <div class="servicio-name">Creación de Servidores</div>
-        <p class="servicio-desc">Configuramos y desplegamos tu servidor Minecraft desde cero: plugins, permisos, mundos, economía y todo lo que necesites.</p>
-        <ul class="servicio-features">
-          <li>Instalación y configuración completa</li>
-          <li>Plugins optimizados y personalizados</li>
-          <li>Sistema de rangos y permisos</li>
-          <li>Anti-lag y optimización</li>
-          <li>Mundos personalizados</li>
+      <!-- Servidor Minecraft -->
+      <div class="srv-card fu">
+        <span class="srv-icon">⛏️</span>
+        <div class="srv-tag">Servidor Minecraft</div>
+        <div class="srv-name">Creación de Servidor</div>
+        <div class="srv-desc">Setup completo de servidor Minecraft desde cero. Paper, Spigot, BungeeCord o Velocity. Plugins configurados, permisos, protecciones y optimización.</div>
+        <div class="srv-from">Desde</div>
+        <div class="srv-price"><span>$</span>25</div>
+        <div class="srv-period">pago único · según complejidad</div>
+        <ul class="srv-feats">
+          <li>Instalación servidor Paper/Spigot</li>
+          <li>Hasta 15 plugins configurados</li>
+          <li>LuckPerms + WorldGuard + más</li>
+          <li>Spawn personalizado</li>
+          <li>Anti-cheat y protección</li>
+          <li>7 días de soporte post-entrega</li>
         </ul>
-        <div class="servicio-price-area">
-          <div class="servicio-desde">Desde</div>
-          <div class="servicio-price">$29.99 <span>/ proyecto</span></div>
-        </div>
-        <a href="#contacto" class="btn-contratar">Contratar Ahora →</a>
+        <a href="#contact" class="btn-srv btn-srv-outline">Solicitar ahora →</a>
       </div>
 
-      <div class="servicio-card reveal">
-        <div class="servicio-num">02</div>
-        <div class="servicio-icon">🌐</div>
-        <div class="servicio-name">Páginas Web</div>
-        <p class="servicio-desc">Desarrollamos tu página web profesional para tu servidor: store, foro, panel de donaciones y más.</p>
-        <ul class="servicio-features">
-          <li>Diseño moderno y responsive</li>
-          <li>Tienda de rangos integrada</li>
-          <li>Panel de administración</li>
+      <!-- Web Gaming FEATURED -->
+      <div class="srv-card featured fu">
+        <div class="srv-badge-wrap"><div class="srv-badge">POPULAR</div></div>
+        <span class="srv-icon">🌐</span>
+        <div class="srv-tag">Sitio Web</div>
+        <div class="srv-name">Página Web Gaming</div>
+        <div class="srv-desc">Sitio web moderno para tu servidor o marca gaming. Tienda integrada, panel de stats, sistema de ranks y diseño 100% personalizado.</div>
+        <div class="srv-from">Desde</div>
+        <div class="srv-price"><span>$</span>65</div>
+        <div class="srv-period">pago único · incluye hosting 1 año</div>
+        <ul class="srv-feats">
+          <li>Diseño único y responsive</li>
+          <li>Tienda de ranks/items integrada</li>
+          <li>Panel de stats del servidor</li>
+          <li>Integración Discord OAuth</li>
           <li>SEO optimizado</li>
-          <li>Integración con Discord</li>
+          <li>30 días de soporte</li>
         </ul>
-        <div class="servicio-price-area">
-          <div class="servicio-desde">Desde</div>
-          <div class="servicio-price">$49.99 <span>/ proyecto</span></div>
-        </div>
-        <a href="#contacto" class="btn-contratar">Contratar Ahora →</a>
+        <a href="#contact" class="btn-srv btn-srv-gold">Solicitar ahora →</a>
       </div>
 
-      <div class="servicio-card reveal">
-        <div class="servicio-num">03</div>
-        <div class="servicio-icon">⚙️</div>
-        <div class="servicio-name">Servicios Personalizados</div>
-        <p class="servicio-desc">¿Necesitas algo único? Desarrollo de plugins a medida, scripts, bots de Discord y más soluciones custom.</p>
-        <ul class="servicio-features">
-          <li>Plugins hechos a tu medida</li>
-          <li>Bots de Discord personalizados</li>
-          <li>Scripts de automatización</li>
-          <li>Integración con APIs externas</li>
-          <li>Soporte técnico dedicado</li>
+      <!-- Otros -->
+      <div class="srv-card fu">
+        <span class="srv-icon">⚡</span>
+        <div class="srv-tag">Personalizado</div>
+        <div class="srv-name">Otros Servicios</div>
+        <div class="srv-desc">Bots de Discord, automatizaciones, configuraciones avanzadas, redes multi-servidor, auditorías o cualquier proyecto a medida.</div>
+        <div class="srv-from">Desde</div>
+        <div class="srv-price"><span>$</span>15</div>
+        <div class="srv-period">por servicio · presupuesto personalizado</div>
+        <ul class="srv-feats">
+          <li>Bot Discord personalizado</li>
+          <li>Red BungeeCord/Velocity</li>
+          <li>Migración de servidores</li>
+          <li>Auditoría y optimización</li>
+          <li>Scripts automatización</li>
+          <li>Soporte técnico mensual</li>
         </ul>
-        <div class="servicio-price-area">
-          <div class="servicio-desde">Precio</div>
-          <div class="servicio-price">Cotización <span>/ personalizado</span></div>
-        </div>
-        <a href="#contacto" class="btn-contratar">Solicitar Cotización →</a>
+        <a href="#contact" class="btn-srv btn-srv-outline">Solicitar ahora →</a>
       </div>
 
+    </div>
+    <p style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);margin-top:2rem;opacity:.7">* Precios orientativos. Presupuesto final según complejidad. Consulta gratuita disponible.</p>
+  </div>
+</section>
+
+<!-- COMMUNITY / DISCORD -->
+<section id="community">
+  <div class="wrap">
+    <div class="comm-grid">
+      <div class="comm-text fu">
+        <div class="s-label">Comunidad</div>
+        <h3>Únete a la<br>Comunidad MCMarket</h3>
+        <p>Más de 5,000 miembros en nuestro servidor de Discord. Soporte, tutoriales, recursos gratuitos, sorteos VIP y la comunidad más activa de Minecraft en español.</p>
+        <p>Accede al canal exclusivo VIP con recursos semanales, previews de nuevos productos y atención personalizada.</p>
+        <a href="#" class="dc-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+          Unirse al Discord
+        </a>
+      </div>
+      <div class="comm-cards fu">
+        <div class="comm-card">
+          <span class="comm-card-ic">👥</span>
+          <div class="comm-card-n">Miembros</div>
+          <div class="comm-card-v">5,240+</div>
+          <div class="comm-card-s">En el servidor Discord</div>
+        </div>
+        <div class="comm-card">
+          <span class="comm-card-ic">🟢</span>
+          <div class="comm-card-n">En línea ahora</div>
+          <div class="comm-card-v">~380</div>
+          <div class="comm-card-s">Miembros activos</div>
+        </div>
+        <div class="comm-card">
+          <span class="comm-card-ic">💎</span>
+          <div class="comm-card-n">Miembros VIP</div>
+          <div class="comm-card-v">820+</div>
+          <div class="comm-card-s">Con acceso premium</div>
+        </div>
+        <div class="comm-card">
+          <span class="comm-card-ic">📦</span>
+          <div class="comm-card-n">Recursos nuevos</div>
+          <div class="comm-card-v">+12/sem</div>
+          <div class="comm-card-s">Subidos semanalmente</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- COMUNIDAD -->
-<section id="comunidad">
-  <div class="section-inner">
-    <div class="section-header reveal">
-      <div class="section-tag">Comunidad</div>
-      <h2 class="section-title">Únete a Nosotros</h2>
-      <p class="section-desc">Conecta con miles de administradores y jugadores en nuestra comunidad.</p>
-    </div>
-
-    <div class="discord-banner reveal">
-      <span class="discord-logo">🎮</span>
-      <div class="discord-title">Discord Oficial — MCMarket</div>
-      <p class="discord-desc">+2,400 miembros. Soporte en vivo, novedades, sorteos y canal VIP exclusivo.</p>
-      <a href="https://discord.gg/mcmarket" target="_blank" class="btn-discord">
-        <svg width="18" height="14" viewBox="0 0 71 55" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M60.1 4.9C55.5 2.7 50.6 1.1 45.5 0.2c-0.7 1.2-1.4 2.8-1.9 4.1c-5.5-0.8-10.9-0.8-16.3 0C26.8 3 26 1.4 25.3 0.2C20.2 1.1 15.3 2.7 10.7 4.9C1.5 18.7-0.9 32.2 0.3 45.5c5.8 4.3 11.4 6.9 16.9 8.6c1.4-1.9 2.6-3.9 3.6-6c-1.9-0.7-3.8-1.6-5.5-2.7c0.5-0.3 0.9-0.7 1.4-1c10.6 4.9 22.1 4.9 32.5 0c0.5 0.3 0.9 0.7 1.4 1c-1.8 1.1-3.7 2-5.5 2.7c1 2.1 2.2 4.1 3.6 6c5.5-1.7 11.2-4.3 16.9-8.6C72.7 29.9 68.6 16.3 60.1 4.9zM23.7 37.3c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2s6.4 3.2 6.4 7.2S27.3 37.3 23.7 37.3zM47.3 37.3c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2s6.4 3.2 6.4 7.2S50.8 37.3 47.3 37.3z"/></svg>
-        Unirse al Discord
-      </a>
-    </div>
-
-    <div class="socials-grid">
-      <a href="https://instagram.com/mcmarket" target="_blank" class="social-card social-instagram reveal">
-        <span class="social-icon">📸</span>
-        <div>
-          <div class="social-name">Instagram</div>
-          <div class="social-handle">@mcmarket.oficial</div>
+<!-- SOCIAL -->
+<section id="social">
+  <div class="wrap" style="padding-top:5rem;padding-bottom:5rem">
+    <div class="s-label">Redes Sociales</div>
+    <h2 class="s-title">Síguenos <span class="hl">Aquí</span></h2>
+    <div class="soc-grid">
+      <a href="#" class="soc-card ig fi">
+        <div class="soc-iw">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
         </div>
+        <div class="soc-name">Instagram</div>
+        <div class="soc-handle">@mcmarket.store</div>
       </a>
-      <a href="https://tiktok.com/@mcmarket" target="_blank" class="social-card social-tiktok reveal">
-        <span class="social-icon">🎵</span>
-        <div>
-          <div class="social-name">TikTok</div>
-          <div class="social-handle">@mcmarket</div>
+      <a href="#" class="soc-card dc fi">
+        <div class="soc-iw">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
         </div>
+        <div class="soc-name">Discord</div>
+        <div class="soc-handle">discord.gg/mcmarket</div>
       </a>
-      <a href="https://youtube.com/mcmarket" target="_blank" class="social-card social-youtube reveal">
-        <span class="social-icon">▶️</span>
-        <div>
-          <div class="social-name">YouTube</div>
-          <div class="social-handle">MCMarket Oficial</div>
+      <a href="#" class="soc-card gh fi">
+        <div class="soc-iw">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
         </div>
+        <div class="soc-name">GitHub</div>
+        <div class="soc-handle">github.com/mcmarket</div>
       </a>
-      <a href="https://twitter.com/mcmarket" target="_blank" class="social-card social-twitter reveal">
-        <span class="social-icon">🐦</span>
-        <div>
-          <div class="social-name">Twitter / X</div>
-          <div class="social-handle">@mcmarket</div>
+      <a href="#" class="soc-card yt fi">
+        <div class="soc-iw">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
         </div>
+        <div class="soc-name">YouTube</div>
+        <div class="soc-handle">MCMarket Tutorials</div>
+      </a>
+      <a href="#" class="soc-card tw fi">
+        <div class="soc-iw">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+        <div class="soc-name">X / Twitter</div>
+        <div class="soc-handle">@mcmarket_store</div>
       </a>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- CONTACTO -->
-<section id="contacto">
-  <div class="section-inner">
-    <div class="section-header reveal">
-      <div class="section-tag">Soporte & Contacto</div>
-      <h2 class="section-title">Hablemos</h2>
-      <p class="section-desc">¿Listo para llevar tu servidor al siguiente nivel? Contáctanos.</p>
-    </div>
-    <div class="contacto-inner reveal">
-      <div>
-        <div class="contacto-info-title">¿Cómo podemos ayudarte?</div>
-        <p class="contacto-info-desc">
-          Ya sea que necesites un servidor completo, una página web profesional, o un plugin a medida,
-          nuestro equipo está listo para hacerlo realidad. Respondemos en menos de 24 horas.
-        </p>
-        <div class="contact-methods">
-          <div class="contact-method">
-            <span class="cm-icon">💬</span>
-            <div>
-              <div class="cm-label">Discord</div>
-              <div class="cm-value">discord.gg/mcmarket</div>
-            </div>
-          </div>
-          <div class="contact-method">
-            <span class="cm-icon">📧</span>
-            <div>
-              <div class="cm-label">Email</div>
-              <div class="cm-value">soporte@mcmarket.net</div>
-            </div>
-          </div>
-          <div class="contact-method">
-            <span class="cm-icon">⏱️</span>
-            <div>
-              <div class="cm-label">Tiempo de Respuesta</div>
-              <div class="cm-value">Menos de 24 horas</div>
-            </div>
-          </div>
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-inner">
+      <div class="s-label" style="justify-content:center">Contacto</div>
+      <h2 class="s-title fu" style="text-align:center">¿Listo para <span class="hl">Empezar?</span></h2>
+      <p class="fu">Cuéntanos sobre tu proyecto. Respondemos en menos de 24 horas con un presupuesto sin compromiso.</p>
+      <div class="contact-grid fu">
+        <div class="c-field">
+          <label>Tu nombre</label>
+          <input type="text" placeholder="Steve Notch">
+        </div>
+        <div class="c-field">
+          <label>Correo electrónico</label>
+          <input type="email" placeholder="steve@servidor.com">
+        </div>
+        <div class="c-field">
+          <label>Servicio</label>
+          <select>
+            <option value="">Selecciona un servicio...</option>
+            <option>⛏️ Creación de Servidor Minecraft</option>
+            <option>🌐 Diseño Web Gaming</option>
+            <option>⚡ Otro servicio personalizado</option>
+            <option>💎 Info sobre VIP</option>
+            <option>🛒 Soporte tienda</option>
+          </select>
+        </div>
+        <div class="c-field">
+          <label>Presupuesto estimado</label>
+          <select>
+            <option value="">¿Cuánto tienes disponible?</option>
+            <option>Menos de $20</option>
+            <option>$20 - $50</option>
+            <option>$50 - $100</option>
+            <option>$100 - $200</option>
+            <option>Más de $200</option>
+          </select>
+        </div>
+        <div class="c-field full">
+          <label>Descripción del proyecto</label>
+          <textarea placeholder="Cuéntanos qué necesitas..."></textarea>
         </div>
       </div>
-      <div>
-        <div class="contacto-form" id="contactForm">
-          <div class="form-group">
-            <label class="form-label">Tu Nombre</label>
-            <input type="text" class="form-input" placeholder="Steve Notch" id="fname">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Correo Electrónico</label>
-            <input type="email" class="form-input" placeholder="tu@correo.com" id="femail">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Servicio de Interés</label>
-            <select class="form-input" id="fservice" style="cursor:none;">
-              <option value="">Seleccionar...</option>
-              <option>Creación de Servidor</option>
-              <option>Página Web</option>
-              <option>Plugin Personalizado</option>
-              <option>Rango VIP</option>
-              <option>Soporte Técnico</option>
-              <option>Otro</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Mensaje</label>
-            <textarea class="form-textarea" rows="4" placeholder="Cuéntanos sobre tu proyecto..." id="fmessage"></textarea>
-          </div>
-          <button class="btn-enviar" onclick="submitForm()">✉ Enviar Mensaje</button>
-        </div>
-      </div>
+      <button class="send-btn fu">✦ Enviar solicitud</button>
     </div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">MCMARKET</div>
-  <div class="footer-copy">© 2025 MCMarket. Todos los derechos reservados.</div>
-  <div class="footer-links">
-    <a href="#">Términos</a>
-    <a href="#">Privacidad</a>
-    <a href="#">Reembolsos</a>
-  </div>
+  <div class="footer-logo">MCMarket</div>
+  <div class="footer-copy">© 2025 MCMarket · Todos los derechos reservados · Tienda Premium de Minecraft</div>
+  <div style="font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace">Hecho con 💜 y café ☕</div>
 </footer>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-icon" id="toastIcon">✅</span>
-  <span id="toastMsg">Mensaje</span>
-</div>
-
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script>
+// CURSOR
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function ac(){
+  cur.style.left=(mx-6)+'px';cur.style.top=(my-6)+'px';
+  rx+=(mx-rx)*.11;ry+=(my-ry)*.11;
+  ring.style.left=(rx-17)+'px';ring.style.top=(ry-17)+'px';
+  requestAnimationFrame(ac);
+})();
+
+// HERO PARTICLE CANVAS
+const cv=document.getElementById('hero-canvas'),ctx=cv.getContext('2d');
+function rsz(){cv.width=innerWidth;cv.height=innerHeight}
+rsz();addEventListener('resize',rsz);
+const chars='01アイウエ⛏️PLUGINSYAMLSERVERCONFIG{}[]<>▸◆✦';
+const cols=Math.floor(cv.width/20);
+const drops=Array(cols).fill(1);
+const clrs=['#7c3aed','#a855f7','#f59e0b','#fcd34d','#4c1d95'];
+function draw(){
+  ctx.fillStyle='rgba(9,8,15,.06)';ctx.fillRect(0,0,cv.width,cv.height);
+  for(let i=0;i<drops.length;i++){
+    ctx.fillStyle=clrs[Math.floor(Math.random()*clrs.length)];
+    ctx.font=`${12+Math.random()*4}px JetBrains Mono,monospace`;
+    const c=chars[Math.floor(Math.random()*chars.length)];
+    ctx.fillText(c,i*20,drops[i]*20);
+    if(drops[i]*20>cv.height&&Math.random()>.978)drops[i]=0;
+    drops[i]++;
+  }
+}
+setInterval(draw,60);
+
+// GSAP
 gsap.registerPlugin(ScrollTrigger);
 
-// CURSOR
-const cursor = document.getElementById('cursor');
-const ring = document.getElementById('cursorRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
-function animRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); }
-animRing();
-document.querySelectorAll('a, button, .plugin-card, .servicio-card, .role-card, .social-card').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2.5)'; ring.style.width = '60px'; ring.style.height = '60px'; ring.style.opacity = '0.3'; });
-  el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '0.6'; });
-});
+// HERO
+gsap.timeline()
+  .from('.hero-eyebrow',{opacity:0,y:20,duration:.8,delay:.2})
+  .from('.hero-title',{opacity:0,y:60,duration:1,ease:'power3.out'},'-=.3')
+  .from('.hero-sub',{opacity:0,y:20,duration:.7},'-=.4')
+  .from('.hero-desc',{opacity:0,y:20,duration:.7},'-=.4')
+  .from('.hero-ctas',{opacity:0,y:20,duration:.6},'-=.3')
+  .from('.vip-badge',{opacity:0,y:10,duration:.5},'-=.2')
+  .from('.scroll-arr',{opacity:0,duration:.5},'-=.2');
 
-// PARTICLES
-const pContainer = document.getElementById('particles');
-const colors = ['#9f67ff','#c9a227','#e8ecf4','#7c3aed','#f0c040'];
-for (let i = 0; i < 40; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  const size = Math.random() * 3 + 1;
-  p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*15+8}s;animation-delay:${Math.random()*10}s;`;
-  pContainer.appendChild(p);
-}
+// ORB parallax
+gsap.to('.orb-1',{yPercent:30,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+gsap.to('.orb-2',{yPercent:20,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+gsap.to('.orb-3',{yPercent:15,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
 
-// GSAP ANIMATIONS
-gsap.from('.hero-badge', { duration: 1, opacity: 0, y: 30, ease: 'power3.out', delay: 0.3 });
-gsap.from('.hero-title .line1', { duration: 1.2, opacity: 0, y: 60, ease: 'power3.out', delay: 0.5 });
-gsap.from('.hero-title .line2', { duration: 1.2, opacity: 0, y: 60, ease: 'power3.out', delay: 0.7 });
-gsap.from('.hero-sub', { duration: 1, opacity: 0, y: 30, ease: 'power3.out', delay: 0.9 });
-gsap.from('.hero-btns', { duration: 1, opacity: 0, y: 30, ease: 'power3.out', delay: 1.1 });
-gsap.from('.stat', { duration: 0.8, opacity: 0, y: 20, stagger: 0.15, ease: 'power2.out', delay: 1.4 });
-
-// SCROLL REVEAL
-document.querySelectorAll('.reveal').forEach(el => {
-  gsap.fromTo(el, { opacity: 0, y: 40 }, {
-    opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
-    scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+// PARALLAX BANNERS — smooth expand + translate
+[['#px1','#px1i',-1],['#px2','#px2i',1],['#px3','#px3i',-1]].forEach(([sec,inn,dir])=>{
+  gsap.to(inn,{
+    yPercent:dir*28,ease:'none',
+    scrollTrigger:{trigger:sec,start:'top bottom',end:'bottom top',scrub:true}
+  });
+  gsap.fromTo(inn,{scale:1},{scale:1.14,ease:'none',
+    scrollTrigger:{trigger:sec,start:'top 92%',end:'bottom 8%',scrub:1.8}
   });
 });
 
-// PARALLAX HERO GRID
-gsap.to('.hero-grid', {
-  yPercent: 30,
-  ease: 'none',
-  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 }
+// FADE UPs
+gsap.utils.toArray('.fu').forEach(el=>{
+  gsap.fromTo(el,{opacity:0,y:50},{opacity:1,y:0,duration:.9,ease:'power2.out',
+    scrollTrigger:{trigger:el,start:'top 86%',once:true}});
 });
-gsap.to('.hero-content', {
-  yPercent: 20,
-  opacity: 0.3,
-  ease: 'none',
-  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 }
+gsap.utils.toArray('.fi').forEach(el=>{
+  gsap.fromTo(el,{opacity:0},{opacity:1,duration:.9,ease:'power2.out',
+    scrollTrigger:{trigger:el,start:'top 86%',once:true}});
 });
-
-// NAV SCROLL
-window.addEventListener('scroll', () => {
-  const nav = document.getElementById('navbar');
-  nav.style.background = window.scrollY > 60 ? 'rgba(6,6,8,0.95)' : 'rgba(6,6,8,0.7)';
+gsap.utils.toArray('.si').forEach(el=>{
+  gsap.fromTo(el,{opacity:0,scale:.85},{opacity:1,scale:1,duration:.8,ease:'back.out(1.5)',
+    scrollTrigger:{trigger:el,start:'top 86%',once:true}});
 });
 
-// PLUGIN FILTER
-function filterPlugins(cat, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.plugin-card').forEach(card => {
-    if (cat === 'all' || card.dataset.cat?.includes(cat)) {
-      card.style.display = '';
-      gsap.fromTo(card, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' });
-    } else {
-      card.style.display = 'none';
-    }
-  });
-}
+// STAGGER shop cards
+gsap.utils.toArray('.shop-grid .product-card').forEach((c,i)=>{
+  gsap.fromTo(c,{opacity:0,y:45},{opacity:1,y:0,duration:.7,delay:i*.1,ease:'power2.out',
+    scrollTrigger:{trigger:'.shop-grid',start:'top 82%',once:true}});
+});
+gsap.utils.toArray('.plans-grid .plan-card').forEach((c,i)=>{
+  gsap.fromTo(c,{opacity:0,y:45},{opacity:1,y:0,duration:.7,delay:i*.15,ease:'power2.out',
+    scrollTrigger:{trigger:'.plans-grid',start:'top 82%',once:true}});
+});
+gsap.utils.toArray('.srv-grid .srv-card').forEach((c,i)=>{
+  gsap.fromTo(c,{opacity:0,y:45},{opacity:1,y:0,duration:.7,delay:i*.15,ease:'power2.out',
+    scrollTrigger:{trigger:'.srv-grid',start:'top 82%',once:true}});
+});
+gsap.utils.toArray('.soc-grid .soc-card').forEach((c,i)=>{
+  gsap.fromTo(c,{opacity:0,scale:.8},{opacity:1,scale:1,duration:.5,delay:i*.09,ease:'back.out(1.4)',
+    scrollTrigger:{trigger:'.soc-grid',start:'top 84%',once:true}});
+});
 
-// TOAST
-let toastTimeout;
-function showToast(msg, type) {
-  const toast = document.getElementById('toast');
-  const toastMsg = document.getElementById('toastMsg');
-  const toastIcon = document.getElementById('toastIcon');
-  clearTimeout(toastTimeout);
-  toastMsg.textContent = msg;
-  if (type === 'vip') {
-    toast.style.borderColor = 'rgba(201,162,39,0.5)';
-    toastIcon.textContent = '💎';
-  } else {
-    toast.style.borderColor = 'rgba(124,58,237,0.5)';
-    toastIcon.textContent = '✅';
-  }
-  toast.classList.add('show');
-  toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
-}
+// COUNTERS
+gsap.utils.toArray('.cnt').forEach(el=>{
+  const t=+el.dataset.t;
+  ScrollTrigger.create({trigger:el,start:'top 85%',once:true,onEnter:()=>{
+    gsap.to({v:0},{v:t,duration:2.2,ease:'power2.out',onUpdate:function(){
+      el.textContent=Math.round(this.targets()[0].v).toLocaleString();
+    }});
+  }});
+});
 
-// FORM SUBMIT
-function submitForm() {
-  const name = document.getElementById('fname').value;
-  const email = document.getElementById('femail').value;
-  if (!name || !email) { showToast('⚠️ Por favor completa los campos requeridos.', 'vip'); return; }
-  showToast('✅ ¡Mensaje enviado! Te contactamos pronto.', 'success');
-  document.getElementById('fname').value = '';
-  document.getElementById('femail').value = '';
-  document.getElementById('fservice').value = '';
-  document.getElementById('fmessage').value = '';
-}
+// NAV scroll
+ScrollTrigger.create({start:'top -50',onUpdate:s=>{
+  document.getElementById('mainNav').style.background=s.progress>0?'rgba(9,8,15,.97)':'rgba(9,8,15,.8)';
+}});
 
-// CARD TILT EFFECT
-document.querySelectorAll('.plugin-card, .servicio-card, .role-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    card.style.transform = `translateY(-6px) rotateX(${-y * 5}deg) rotateY(${x * 5}deg)`;
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = '';
-    card.style.transition = 'transform 0.5s ease';
-    setTimeout(() => card.style.transition = '', 500);
+// filter bar
+document.querySelectorAll('.filter-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
   });
 });
 
-// COUNTER ANIMATION
-function animateCounter(el, target, suffix = '') {
-  let start = 0;
-  const duration = 2000;
-  const step = (timestamp) => {
-    if (!start) start = timestamp;
-    const progress = Math.min((timestamp - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.floor(ease * target) + suffix;
-    if (progress < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
+// floating particles hero
+const hero=document.getElementById('hero');
+for(let i=0;i<20;i++){
+  const d=document.createElement('div');
+  const sz=Math.random()*3+1.5;
+  d.style.cssText=`position:absolute;border-radius:50%;width:${sz}px;height:${sz}px;
+    background:rgba(${Math.random()>.5?'124,58,237':'245,158,11'},${.15+Math.random()*.3});
+    left:${Math.random()*100}%;top:${Math.random()*100}%;pointer-events:none;z-index:1;
+    box-shadow:0 0 ${sz*3}px rgba(124,58,237,.5)`;
+  hero.appendChild(d);
+  gsap.to(d,{x:`+=${(Math.random()-.5)*90}`,y:`+=${(Math.random()-.5)*90}`,
+    opacity:Math.random()*.5+.1,duration:3+Math.random()*5,
+    repeat:-1,yoyo:true,ease:'sine.inOut',delay:Math.random()*3});
 }
-const statsObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const nums = document.querySelectorAll('.stat-num');
-      const targets = [500, 2400, 99, 24];
-      const suffixes = ['+', '+', '%', '/7'];
-      nums.forEach((n, i) => animateCounter(n, targets[i], suffixes[i]));
-      statsObserver.disconnect();
-    }
-  });
-}, { threshold: 0.5 });
-const statsEl = document.querySelector('.hero-stats');
-if (statsEl) statsObserver.observe(statsEl);
 </script>
 </body>
 </html>
