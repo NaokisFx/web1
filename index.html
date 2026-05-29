@@ -25,20 +25,22 @@
   --text:        #e2d9f3;
   --muted:       #7c6f9e;
 }
-
+ 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden;cursor:none}
-
+ 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--purple);border-radius:2px}
-
+ 
 /* CURSOR */
-.cur{position:fixed;width:12px;height:12px;background:var(--purple-light);border-radius:50%;pointer-events:none;z-index:9999;mix-blend-mode:screen;transition:transform .08s}
-.cur-ring{position:fixed;width:34px;height:34px;border:1.5px solid var(--purple-light);border-radius:50%;pointer-events:none;z-index:9998;opacity:.45;transition:all .14s ease}
-
+/* ── LUXURY CURSOR ── */
+#lux-cursor{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;will-change:transform;transition:transform .06s}
+.lux-outer{position:fixed;top:0;left:0;pointer-events:none;z-index:9998;will-change:transform}
+#trail-canvas{position:fixed;inset:0;pointer-events:none;z-index:9997}
+ 
 /* GLOBAL TEXTURE BG */
 .gtex{position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
@@ -47,7 +49,7 @@ body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;over
     repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(124,58,237,.03) 60px),
     repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(124,58,237,.03) 60px);
 }
-
+ 
 /* ── NAV ── */
 nav{position:fixed;top:0;left:0;right:0;z-index:200;
   display:flex;align-items:center;justify-content:space-between;
@@ -72,7 +74,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;
 .nav-btn-ghost:hover{border-color:var(--purple-light);color:var(--purple-light)}
 .nav-btn-vip{background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:#1a0a00;font-weight:700}
 .nav-btn-vip:hover{box-shadow:0 0 18px rgba(245,158,11,.4)}
-
+ 
 /* ── HERO ── */
 #hero{height:100vh;min-height:720px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
 #hero-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.22}
@@ -99,7 +101,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;
 .btn-gold:hover{box-shadow:0 0 28px rgba(245,158,11,.55);transform:translateY(-2px)}
 .btn-purple{background:transparent;color:var(--purple-light);border:1.5px solid var(--border)}
 .btn-purple:hover{border-color:var(--purple-light);background:rgba(124,58,237,.12);box-shadow:0 0 20px var(--purple-glow)}
-
+ 
 /* badge VIP */
 .vip-badge{display:inline-flex;align-items:center;gap:.5rem;
   border:1px solid var(--border-gold);border-radius:20px;
@@ -107,20 +109,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;
   background:rgba(245,158,11,.07);font-size:.8rem;color:var(--gold)}
 .vip-badge-icon{width:22px;height:22px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));
   border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem}
-
+ 
 /* scroll arrow */
 .scroll-arr{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;
   display:flex;flex-direction:column;align-items:center;gap:.4rem;
   font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.2em}
 .arrow-line{width:1px;height:42px;background:linear-gradient(180deg,var(--purple-light),transparent);animation:ap 2s ease-in-out infinite}
 @keyframes ap{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.3;transform:scaleY(.5)}}
-
+ 
 /* floating orbs */
 .orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px)}
 .orb-1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 70%);top:-100px;left:-150px}
 .orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(245,158,11,.1),transparent 70%);top:20%;right:-100px}
 .orb-3{width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.12),transparent 70%);bottom:5%;left:30%}
-
+ 
 /* ── SECTION BASE ── */
 section{position:relative;z-index:1}
 .wrap{max-width:1200px;margin:0 auto;padding:6rem 2rem}
@@ -132,7 +134,7 @@ section{position:relative;z-index:1}
   font-size:clamp(1.8rem,4vw,3rem);color:#fff;line-height:1.1;margin-bottom:1rem}
 .s-title .hl{background:linear-gradient(90deg,var(--purple-light),var(--gold-light));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-
+ 
 /* ── STATS STRIP ── */
 #stats{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface)}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
@@ -146,7 +148,7 @@ section{position:relative;z-index:1}
   background:linear-gradient(135deg,var(--gold-light),var(--gold));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
 .stat-l{font-size:.8rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:.4rem}
-
+ 
 /* ── PARALLAX BANNER ── */
 .px-banner{height:480px;position:relative;overflow:hidden}
 .px-inner{position:absolute;inset:-25%;background-size:cover;background-position:center;will-change:transform}
@@ -156,7 +158,7 @@ section{position:relative;z-index:1}
 .px-title{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,4.5rem);font-weight:900;
   color:#fff;text-shadow:0 0 40px var(--purple-glow)}
 .px-sub{font-size:1rem;color:var(--silver-dim);max-width:420px}
-
+ 
 /* ── SHOP SECTION ── */
 #shop{background:var(--bg2)}
 .filter-bar{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2.5rem}
@@ -200,10 +202,10 @@ section{position:relative;z-index:1}
 .card-btn-vip:hover{box-shadow:0 0 14px rgba(245,158,11,.4)}
 .card-btn-dl{background:transparent;color:var(--purple-light);border:1px solid var(--border)}
 .card-btn-dl:hover{border-color:var(--purple-light);background:rgba(124,58,237,.1)}
-
+ 
 /* ── PARALLAX 2 ── */
 /* reutiliza .px-banner */
-
+ 
 /* ── ROLES/PLANS ── */
 #plans{background:var(--surface)}
 .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:3rem}
@@ -241,7 +243,7 @@ section{position:relative;z-index:1}
 .btn-plan-ghost:hover{border-color:var(--purple-light);color:var(--purple-light)}
 .btn-plan-vip{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light));color:#0a0500;font-weight:700;border:none}
 .btn-plan-vip:hover{box-shadow:0 0 24px rgba(245,158,11,.5)}
-
+ 
 /* ── SERVICES ── */
 #services{background:var(--bg)}
 .srv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;margin-top:3rem}
@@ -276,9 +278,9 @@ section{position:relative;z-index:1}
 .btn-srv-outline:hover{border-color:var(--purple-light);background:rgba(124,58,237,.1)}
 .btn-srv-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold));color:#0a0500;font-weight:700;border:none}
 .btn-srv-gold:hover{box-shadow:0 0 22px rgba(245,158,11,.5)}
-
+ 
 /* ── PARALLAX 3 ── */
-
+ 
 /* ── COMMUNITY ── */
 #community{background:var(--surface)}
 .comm-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
@@ -296,7 +298,7 @@ section{position:relative;z-index:1}
 .comm-card-n{font-family:'Cinzel',serif;font-size:.85rem;font-weight:600;color:#fff;margin-bottom:.3rem}
 .comm-card-v{font-size:1.3rem;color:#5865F2;font-family:'Cinzel',serif;font-weight:700}
 .comm-card-s{font-size:.75rem;color:var(--muted);margin-top:.2rem}
-
+ 
 /* ── SOCIAL ── */
 #social{background:var(--bg2)}
 .soc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.2rem;margin-top:3rem}
@@ -317,7 +319,7 @@ section{position:relative;z-index:1}
 .soc-card.tw .soc-iw{color:#1DA1F2;background:rgba(29,161,242,.08)}
 .soc-name{font-family:'Cinzel',serif;font-size:.8rem;font-weight:600;color:#fff}
 .soc-handle{font-size:.78rem;color:var(--muted)}
-
+ 
 /* ── CONTACT ── */
 #contact{background:var(--surface)}
 .contact-inner{max-width:680px;margin:0 auto;text-align:center}
@@ -338,7 +340,7 @@ section{position:relative;z-index:1}
   font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;
   letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:all .25s}
 .send-btn:hover{box-shadow:0 0 28px var(--purple-glow);transform:translateY(-2px)}
-
+ 
 /* ── FOOTER ── */
 footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem;
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
@@ -346,12 +348,12 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
   background:linear-gradient(135deg,var(--gold-light),var(--gold));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .footer-copy{font-size:.75rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
-
+ 
 /* ── ANIM HELPERS ── */
 .fu{opacity:0;transform:translateY(45px)}
 .fi{opacity:0}
 .si{opacity:0;transform:scale(.88)}
-
+ 
 /* colored bg helpers */
 .bg-mc1{background:linear-gradient(135deg,#0d0020,#150030,#070012)}
 .bg-mc2{background:linear-gradient(135deg,#06001a,#0a0025,#12003a)}
@@ -359,11 +361,57 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
 </style>
 </head>
 <body>
-
-<div class="cur" id="cur"></div>
-<div class="cur-ring" id="cur-ring"></div>
+ 
+<!-- LUXURY CURSOR -->
+<canvas id="trail-canvas"></canvas>
+ 
+<!-- Inner cursor: diamond SVG -->
+<div id="lux-cursor">
+  <svg width="24" height="24" viewBox="-12 -12 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="dg" cx="30%" cy="25%" r="70%">
+        <stop offset="0%" stop-color="#fcd34d"/>
+        <stop offset="50%" stop-color="#f59e0b"/>
+        <stop offset="100%" stop-color="#a855f7"/>
+      </radialGradient>
+      <filter id="glow-cur" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="2.5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <!-- Diamond gem shape -->
+    <polygon points="0,-9 8,0 0,10 -8,0" fill="url(#dg)" filter="url(#glow-cur)" opacity="0.95"/>
+    <!-- Inner facet highlight -->
+    <polygon points="0,-9 8,0 0,1 -8,0" fill="rgba(255,255,255,0.25)"/>
+    <polygon points="0,-9 4,-3 0,1 -4,-3" fill="rgba(255,255,255,0.15)"/>
+    <!-- Bottom shadow -->
+    <polygon points="8,0 0,10 -8,0 0,3" fill="rgba(0,0,0,0.3)"/>
+    <!-- Center sparkle -->
+    <circle cx="0" cy="-1" r="1.5" fill="white" opacity="0.7"/>
+  </svg>
+</div>
+ 
+<!-- Outer cursor: rotating luxury ring -->
+<div class="lux-outer" id="lux-outer">
+  <svg width="52" height="52" viewBox="-26 -26 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" id="outer-ring-svg">
+    <defs>
+      <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.9"/>
+        <stop offset="50%" stop-color="#a855f7" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.1"/>
+      </linearGradient>
+    </defs>
+    <!-- Dashed luxury ring -->
+    <circle cx="0" cy="0" r="20" stroke="url(#rg)" stroke-width="1" stroke-dasharray="4 3" fill="none"/>
+    <!-- 4 corner diamonds -->
+    <polygon points="0,-23 2,-20 0,-17 -2,-20" fill="#f59e0b" opacity="0.9"/>
+    <polygon points="23,0 20,2 17,0 20,-2" fill="#a855f7" opacity="0.7"/>
+    <polygon points="0,23 2,20 0,17 -2,20" fill="#f59e0b" opacity="0.5"/>
+    <polygon points="-23,0 -20,2 -17,0 -20,-2" fill="#a855f7" opacity="0.5"/>
+  </svg>
+</div>
 <div class="gtex"></div>
-
+ 
 <!-- NAV -->
 <nav id="mainNav">
   <div class="logo">MC<span style="background:linear-gradient(90deg,var(--purple-light),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent">MARKET</span></div>
@@ -379,7 +427,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     <a href="#plans" class="nav-btn nav-btn-vip">💎 VIP</a>
   </div>
 </nav>
-
+ 
 <!-- HERO -->
 <section id="hero">
   <div class="orb orb-1"></div>
@@ -406,7 +454,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     <div class="arrow-line"></div>
   </div>
 </section>
-
+ 
 <!-- STATS -->
 <section id="stats">
   <div class="stats-grid">
@@ -417,7 +465,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     <div class="stat-item fu"><div class="stat-n"><span class="cnt" data-t="24">0</span>h</div><div class="stat-l">Soporte disponible</div></div>
   </div>
 </section>
-
+ 
 <!-- PARALLAX BANNER 1 -->
 <div class="px-banner" id="px1">
   <div class="px-inner bg-mc1" id="px1i">
@@ -441,7 +489,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     <p class="px-sub">Plugins, configs, mapas y más para llevar tu servidor al siguiente nivel</p>
   </div>
 </div>
-
+ 
 <!-- SHOP -->
 <section id="shop">
   <div class="wrap">
@@ -457,7 +505,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
       <button class="filter-btn">💎 VIP Only</button>
     </div>
     <div class="shop-grid">
-
+ 
       <!-- Card 1 FREE -->
       <div class="product-card fu">
         <div class="card-img" style="background:linear-gradient(135deg,#0d0020,#1a003a)">
@@ -474,7 +522,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
           </div>
         </div>
       </div>
-
+ 
       <!-- Card 2 VIP -->
       <div class="product-card vip-card fu">
         <div class="card-img" style="background:linear-gradient(135deg,#1a0a00,#2d1500)">
@@ -491,7 +539,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
           </div>
         </div>
       </div>
-
+ 
       <!-- Card 3 -->
       <div class="product-card fu">
         <div class="card-img" style="background:linear-gradient(135deg,#001520,#002030)">
@@ -507,7 +555,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
           </div>
         </div>
       </div>
-
+ 
       <!-- Card 4 VIP -->
       <div class="product-card vip-card fu">
         <div class="card-img" style="background:linear-gradient(135deg,#100020,#1e0038)">
@@ -524,7 +572,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
           </div>
         </div>
       </div>
-
+ 
       <!-- Card 5 FREE -->
       <div class="product-card fu">
         <div class="card-img" style="background:linear-gradient(135deg,#0a1500,#0d2000)">
@@ -541,7 +589,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
           </div>
         </div>
       </div>
-
+ 
       <!-- Card 6 -->
       <div class="product-card fu">
         <div class="card-img" style="background:linear-gradient(135deg,#1a0000,#300010)">
@@ -557,14 +605,14 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
           </div>
         </div>
       </div>
-
+ 
     </div>
     <div style="text-align:center;margin-top:3rem">
       <a href="#" class="btn btn-purple">Ver todos los productos →</a>
     </div>
   </div>
 </section>
-
+ 
 <!-- PARALLAX BANNER 2 -->
 <div class="px-banner" id="px2">
   <div class="px-inner bg-mc2" id="px2i">
@@ -585,7 +633,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     <p class="px-sub">Accede a los mejores recursos solo disponibles para miembros VIP</p>
   </div>
 </div>
-
+ 
 <!-- PLANS -->
 <section id="plans">
   <div class="wrap">
@@ -593,7 +641,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     <h2 class="s-title">Elige tu <span class="hl">Plan</span></h2>
     <p style="font-size:1rem;color:var(--muted);max-width:520px;margin-bottom:0">Desbloquea el contenido premium y accede a recursos exclusivos de la comunidad.</p>
     <div class="plans-grid">
-
+ 
       <!-- USER FREE -->
       <div class="plan-card fu">
         <div class="plan-glow plan-glow-purple"></div>
@@ -614,7 +662,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
         </ul>
         <a href="#" class="btn-plan btn-plan-ghost">Registrarse gratis</a>
       </div>
-
+ 
       <!-- VIP MENSUAL -->
       <div class="plan-card vip fu">
         <div class="plan-glow plan-glow-gold"></div>
@@ -635,7 +683,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
         </ul>
         <a href="#" class="btn-plan btn-plan-vip">💎 Obtener VIP</a>
       </div>
-
+ 
       <!-- VIP ANUAL -->
       <div class="plan-card vip fu">
         <div class="plan-glow plan-glow-gold"></div>
@@ -657,11 +705,11 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
         </ul>
         <a href="#" class="btn-plan btn-plan-vip">👑 Obtener Elite</a>
       </div>
-
+ 
     </div>
   </div>
 </section>
-
+ 
 <!-- PARALLAX BANNER 3 -->
 <div class="px-banner" id="px3">
   <div class="px-inner bg-mc3" id="px3i">
@@ -683,7 +731,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     <p class="px-sub">Tu servidor, tu sitio web, tu proyecto — nosotros lo construimos</p>
   </div>
 </div>
-
+ 
 <!-- SERVICES / CONTRATAR -->
 <section id="services">
   <div class="wrap">
@@ -691,7 +739,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     <h2 class="s-title">Servicios <span class="hl">Profesionales</span></h2>
     <p style="font-size:1rem;color:var(--muted);max-width:520px;margin-bottom:0">Proyectos personalizados entregados con calidad premium y soporte post-entrega incluido.</p>
     <div class="srv-grid">
-
+ 
       <!-- Servidor Minecraft -->
       <div class="srv-card fu">
         <span class="srv-icon">⛏️</span>
@@ -711,7 +759,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
         </ul>
         <a href="#contact" class="btn-srv btn-srv-outline">Solicitar ahora →</a>
       </div>
-
+ 
       <!-- Web Gaming FEATURED -->
       <div class="srv-card featured fu">
         <div class="srv-badge-wrap"><div class="srv-badge">POPULAR</div></div>
@@ -732,7 +780,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
         </ul>
         <a href="#contact" class="btn-srv btn-srv-gold">Solicitar ahora →</a>
       </div>
-
+ 
       <!-- Otros -->
       <div class="srv-card fu">
         <span class="srv-icon">⚡</span>
@@ -752,12 +800,12 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
         </ul>
         <a href="#contact" class="btn-srv btn-srv-outline">Solicitar ahora →</a>
       </div>
-
+ 
     </div>
     <p style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);margin-top:2rem;opacity:.7">* Precios orientativos. Presupuesto final según complejidad. Consulta gratuita disponible.</p>
   </div>
 </section>
-
+ 
 <!-- COMMUNITY / DISCORD -->
 <section id="community">
   <div class="wrap">
@@ -801,7 +849,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     </div>
   </div>
 </section>
-
+ 
 <!-- SOCIAL -->
 <section id="social">
   <div class="wrap" style="padding-top:5rem;padding-bottom:5rem">
@@ -848,7 +896,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     </div>
   </div>
 </section>
-
+ 
 <!-- CONTACT -->
 <section id="contact">
   <div class="wrap">
@@ -896,29 +944,114 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 3rem
     </div>
   </div>
 </section>
-
+ 
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">MCMarket</div>
   <div class="footer-copy">© 2025 MCMarket · Todos los derechos reservados · Tienda Premium de Minecraft</div>
   <div style="font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace">Hecho con 💜 y café ☕</div>
 </footer>
-
+ 
 <!-- GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script>
-// CURSOR
-const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
-(function ac(){
-  cur.style.left=(mx-6)+'px';cur.style.top=(my-6)+'px';
-  rx+=(mx-rx)*.11;ry+=(my-ry)*.11;
-  ring.style.left=(rx-17)+'px';ring.style.top=(ry-17)+'px';
-  requestAnimationFrame(ac);
-})();
-
+// ── LUXURY CURSOR ──
+const luxCursor = document.getElementById('lux-cursor');
+const luxOuter  = document.getElementById('lux-outer');
+const outerSVG  = document.getElementById('outer-ring-svg');
+const trailCv   = document.getElementById('trail-canvas');
+const tCtx      = trailCv.getContext('2d');
+ 
+// Trail canvas size
+function rszTrail(){ trailCv.width=innerWidth; trailCv.height=innerHeight; }
+rszTrail(); addEventListener('resize', rszTrail);
+ 
+let mx=0, my=0;         // mouse exact
+let ox=0, oy=0;         // outer lag
+let angle=0;            // ring rotation
+let isHover=false;
+let trail=[];
+ 
+document.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
+ 
+// Hover detection on interactive elements
+document.querySelectorAll('a,button,.filter-btn,.product-card,.plan-card,.srv-card,.soc-card,.nav-btn,.btn,.card-btn,.btn-plan,.btn-srv,.send-btn,.dc-btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>isHover=true);
+  el.addEventListener('mouseleave',()=>isHover=false);
+});
+ 
+// Trail particles
+function addTrail(){
+  if(Math.random()>.55) return; // sparse luxury trail
+  trail.push({
+    x: mx, y: my,
+    vx: (Math.random()-.5)*1.2,
+    vy: (Math.random()-.5)*1.2,
+    r: Math.random()*2.5+1,
+    life: 1,
+    color: Math.random()>.5 ? '#f59e0b' : '#a855f7',
+    gold: Math.random()>.5
+  });
+  if(trail.length>80) trail.shift();
+}
+ 
+function drawTrail(){
+  tCtx.clearRect(0,0,trailCv.width,trailCv.height);
+  for(let i=trail.length-1;i>=0;i--){
+    const p=trail[i];
+    p.x+=p.vx; p.y+=p.vy;
+    p.life-=0.045;
+    p.r*=0.97;
+    if(p.life<=0){ trail.splice(i,1); continue; }
+    tCtx.save();
+    tCtx.globalAlpha=p.life*0.7;
+    // tiny diamond
+    tCtx.beginPath();
+    tCtx.moveTo(p.x, p.y-p.r*1.4);
+    tCtx.lineTo(p.x+p.r, p.y);
+    tCtx.lineTo(p.x, p.y+p.r*1.4);
+    tCtx.lineTo(p.x-p.r, p.y);
+    tCtx.closePath();
+    tCtx.fillStyle=p.color;
+    tCtx.shadowColor=p.color;
+    tCtx.shadowBlur=6;
+    tCtx.fill();
+    tCtx.restore();
+  }
+}
+ 
+// Smooth outer follow with lag
+function animCursor(){
+  // Outer ring lags behind
+  ox += (mx - ox) * 0.10;
+  oy += (my - oy) * 0.10;
+ 
+  // Inner cursor — instant
+  luxCursor.style.transform = `translate(${mx-12}px, ${my-12}px) ${isHover ? 'scale(1.6) rotate(45deg)' : 'scale(1) rotate(0deg)'}`;
+  luxCursor.style.transition = isHover ? 'transform .25s cubic-bezier(.34,1.56,.64,1)' : 'transform .06s';
+ 
+  // Outer ring — lagged + spinning
+  angle += isHover ? 2.5 : 1.2;
+  luxOuter.style.transform = `translate(${ox-26}px, ${oy-26}px)`;
+  outerSVG.style.transform = `rotate(${angle}deg)`;
+ 
+  // Scale outer on hover
+  outerSVG.style.transition = 'transform .3s ease';
+  luxOuter.style.transition = isHover ? 'none' : 'none';
+  outerSVG.style.opacity = isHover ? '1' : '0.65';
+ 
+  // Scale outer ring bigger on hover
+  const sc = isHover ? 1.5 : 1;
+  outerSVG.style.transform = `rotate(${angle}deg) scale(${sc})`;
+  outerSVG.style.transformOrigin = '26px 26px';
+ 
+  addTrail();
+  drawTrail();
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+ 
 // HERO PARTICLE CANVAS
 const cv=document.getElementById('hero-canvas'),ctx=cv.getContext('2d');
 function rsz(){cv.width=innerWidth;cv.height=innerHeight}
@@ -939,10 +1072,10 @@ function draw(){
   }
 }
 setInterval(draw,60);
-
+ 
 // GSAP
 gsap.registerPlugin(ScrollTrigger);
-
+ 
 // HERO
 gsap.timeline()
   .from('.hero-eyebrow',{opacity:0,y:20,duration:.8,delay:.2})
@@ -952,12 +1085,12 @@ gsap.timeline()
   .from('.hero-ctas',{opacity:0,y:20,duration:.6},'-=.3')
   .from('.vip-badge',{opacity:0,y:10,duration:.5},'-=.2')
   .from('.scroll-arr',{opacity:0,duration:.5},'-=.2');
-
+ 
 // ORB parallax
 gsap.to('.orb-1',{yPercent:30,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
 gsap.to('.orb-2',{yPercent:20,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
 gsap.to('.orb-3',{yPercent:15,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
-
+ 
 // PARALLAX BANNERS — smooth expand + translate
 [['#px1','#px1i',-1],['#px2','#px2i',1],['#px3','#px3i',-1]].forEach(([sec,inn,dir])=>{
   gsap.to(inn,{
@@ -968,7 +1101,7 @@ gsap.to('.orb-3',{yPercent:15,ease:'none',scrollTrigger:{trigger:'#hero',start:'
     scrollTrigger:{trigger:sec,start:'top 92%',end:'bottom 8%',scrub:1.8}
   });
 });
-
+ 
 // FADE UPs
 gsap.utils.toArray('.fu').forEach(el=>{
   gsap.fromTo(el,{opacity:0,y:50},{opacity:1,y:0,duration:.9,ease:'power2.out',
@@ -982,7 +1115,7 @@ gsap.utils.toArray('.si').forEach(el=>{
   gsap.fromTo(el,{opacity:0,scale:.85},{opacity:1,scale:1,duration:.8,ease:'back.out(1.5)',
     scrollTrigger:{trigger:el,start:'top 86%',once:true}});
 });
-
+ 
 // STAGGER shop cards
 gsap.utils.toArray('.shop-grid .product-card').forEach((c,i)=>{
   gsap.fromTo(c,{opacity:0,y:45},{opacity:1,y:0,duration:.7,delay:i*.1,ease:'power2.out',
@@ -1000,7 +1133,7 @@ gsap.utils.toArray('.soc-grid .soc-card').forEach((c,i)=>{
   gsap.fromTo(c,{opacity:0,scale:.8},{opacity:1,scale:1,duration:.5,delay:i*.09,ease:'back.out(1.4)',
     scrollTrigger:{trigger:'.soc-grid',start:'top 84%',once:true}});
 });
-
+ 
 // COUNTERS
 gsap.utils.toArray('.cnt').forEach(el=>{
   const t=+el.dataset.t;
@@ -1010,12 +1143,12 @@ gsap.utils.toArray('.cnt').forEach(el=>{
     }});
   }});
 });
-
+ 
 // NAV scroll
 ScrollTrigger.create({start:'top -50',onUpdate:s=>{
   document.getElementById('mainNav').style.background=s.progress>0?'rgba(9,8,15,.97)':'rgba(9,8,15,.8)';
 }});
-
+ 
 // filter bar
 document.querySelectorAll('.filter-btn').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -1023,7 +1156,7 @@ document.querySelectorAll('.filter-btn').forEach(b=>{
     b.classList.add('active');
   });
 });
-
+ 
 // floating particles hero
 const hero=document.getElementById('hero');
 for(let i=0;i<20;i++){
@@ -1041,3 +1174,4 @@ for(let i=0;i<20;i++){
 </script>
 </body>
 </html>
+ 
